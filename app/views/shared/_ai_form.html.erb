@@ -1,0 +1,15 @@
+<p>Upload AI</p>
+<%= form_for(@ai, html: { multipart: true }) do |f| %>
+  <%= render 'shared/error_messages', object: f.object %>
+  
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "form-control" %>
+
+  <%=f.label :language %>
+  <%=f.select(:language, [['Python', 1], ['Ruby', 2]]) %>
+
+  <%= f.label "Select file:" %>
+  <%= f.file_field :location %>
+ 
+  <%= f.submit "Upload", class: "btn btn-primary" %>
+<% end %>
