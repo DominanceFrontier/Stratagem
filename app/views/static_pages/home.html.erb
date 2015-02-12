@@ -1,0 +1,23 @@
+<% provide(:title, "Home")  %>
+<% if logged_in? %>
+  <div class="row">
+    <aside class="col-md-4">
+      <section class="user_info">
+        <%= render 'shared/user_info' %>
+      </section>
+      <section class="ai_form">
+        <%= render 'shared/ai_form' %>
+      </section>
+    </aside>
+    <div class="col-md-8">
+      <h3>Match History</h3>
+      TODO!!!
+    </div>
+  </div>
+<% else %>
+<div class="center jumbotron">
+  <h1>Stratagem Demo</h1>
+  <p>Welcome to Stratagem Demo!</p>
+  <%= link_to "Get Started Now!", signup_path, class: "btn btn-lg btn-primary" %>
+</div>
+<% end %>
