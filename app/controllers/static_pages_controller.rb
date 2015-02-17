@@ -12,5 +12,10 @@ class StaticPagesController < ApplicationController
 
   def contact
   end
+
+  def match
+    @p1 = Ai.find(params[:p1_id])
+    @p2 = Ai.find(params[:champion])
+  end
   
 end

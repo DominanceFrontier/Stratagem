@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   post 'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'
   get 'frankenstein' => 'ais#new'
+  get 'match' => 'static_pages#match'
 
   
   resources :users

@@ -1,10 +1,11 @@
 <li id="ai-<%= ai.id %>">
-  <span class="content"><%= ai.name %></span>
+  <span class="content"><%= link_to ai.name, ai %></span>
   <span class="user"> owned by <%= link_to ai.user.username, ai.user %></span>
   <span class="timestamp">
     created <%= time_ago_in_words(ai.created_at) %> ago.
   </span>
-
-  <br>
-  <pre><%= render file: ai.location.current_path %></pre>
+  <% if current_user == @user %>
+    <br>
+    <pre><%= render file: ai.location.current_path %></pre>
+  <% end %>
 </li>

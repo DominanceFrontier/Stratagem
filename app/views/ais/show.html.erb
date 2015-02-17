@@ -1,0 +1,22 @@
+<% provide(:title, @ai.user.username + " | " + @ai.name) %>
+<div class="row">
+  <aside class="col-md-4">
+    <section class="ai_info">
+      <h1>
+        <%= @ai.name %>
+      </h1>
+      <% if current_user != @ai.user %>
+        <%= form_tag("/match", method: "get") do %>
+          <%= hidden_field_tag(:p1_id, @ai.id) %>
+          <%= select_tag(:champion, options_from_collection_for_select(current_user.ais, :id, :name)) %>
+          <%= submit_tag("Challenge!") %>
+        <% end %>
+      <% end %>
+    </section>
+  </aside>
+  <div class="col-md-8">
+    <% if current_user == @ai.user %>
+      <pre><%= render file: @ai.location.current_path %></pre>
+    <% end %>
+  </div>
+</div>
