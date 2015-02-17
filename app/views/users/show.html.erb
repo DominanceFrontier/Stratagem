@@ -6,7 +6,16 @@
         <%= avatar_for @user %>
         <%= @user.username %>
       </h1>
-      <p>Your stats: TODO</p>
+      <p>Stats: TODO</p>
     </section>
   </aside>
+  <div class="col-md-8">
+    <% if @user.ais.any? %>
+      <h3><%= @user.username %> has <%= pluralize(@user.ais.count, "bot") %> uploaded:</h3>
+      <ol class="ais">
+        <%= render @ais %>
+      </ol>
+      <%= will_paginate @ais %>
+    <% end %>
+  </div>
 </div>
