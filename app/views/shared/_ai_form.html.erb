@@ -9,7 +9,7 @@
   <%=f.select(:language, [['Python', 1], ['Ruby', 2]]) %>
 
   <%= f.label "Select file:" %>
-  <%= f.file_field :location %>
+  <%= f.file_field :location, accept: 'text/plain' %>
  
   <%= f.submit "Upload", class: "btn btn-primary" %>
 <% end %>

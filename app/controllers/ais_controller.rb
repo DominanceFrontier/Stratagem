@@ -1,7 +1,12 @@
 class AisController < ApplicationController
   before_action :logged_in_user
 
+  def show
+    @ai = Ai.find(params[:id])
+  end
+  
   def new
+    @ai = current_user.ais.build
   end
   
   def create
@@ -10,7 +15,7 @@ class AisController < ApplicationController
       flash[:success] = "AI Script uploaded!"
       redirect_to current_user
     else
-      flash[:danger] = "???"
+      flash[:danger] = "Sorry, upload failed."
       redirect_to contact_path
     end
   end
@@ -23,4 +28,5 @@ class AisController < ApplicationController
   def ai_params
       params.require(:ai).permit(:name, :language, :location)
   end
+  
 end
