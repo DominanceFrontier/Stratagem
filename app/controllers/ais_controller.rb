@@ -1,4 +1,4 @@
-class AIsController < ApplicationController
+class AisController < ApplicationController
   before_action :logged_in_user
 
   def new
@@ -8,9 +8,10 @@ class AIsController < ApplicationController
     @ai = current_user.ais.build(ai_params)
     if @ai.save
       flash[:success] = "AI Script uploaded!"
-      redirect_to root_url
+      redirect_to current_user
     else
-      render 'static_pages/home'
+      flash[:danger] = "???"
+      redirect_to contact_path
     end
   end
 
