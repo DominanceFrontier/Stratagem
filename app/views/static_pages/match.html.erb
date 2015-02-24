@@ -1,342 +1,339 @@
 <script type ="text/javascript">
-  var CANVAS_WIDTH  = 640;
-  var CANVAS_HEIGHT = 580; 
-  var FPS           = 30;
-  var FRAME_WIDTH   = 5;
-  var canvas;
-  var ctx;
-  var turn   = 'X';
-  var turn_time = 30000;
-  var turn_timer;
-  var is_client_move = true;
-  var winner = false;
-  var loaded = false;
-  var sending = false;
-  var winning_turn = "";
+ var CANVAS_WIDTH  = 640;
+ var CANVAS_HEIGHT = 580; 
+ var FPS           = 30;
+ var FRAME_WIDTH   = 5;
+ var canvas;
+ var ctx;
+ var turn   = 'X';
+ var turn_time = 30000;
+ var turn_timer;
+ var is_client_move = true;
+ var winner = false;
+ var loaded = false;
+ var sending = false;
+ var winning_turn = "";
 
-  var game_board = Board();
+ var game_board = Board();
 
-  var move_check_time = 5000;
-  var move_timer = null;
+ var move_check_time = 5000;
+ var move_timer = null;
 
-  function update()
-  {
-  }
+ function update()
+ {
+ }
 
-  function Square(value)
-  {
-  var obj = {};
-  obj.value = value;
-  obj.rect = Rect(0, 0, 0, 0);
+ function Square(value)
+ {
+   var obj = {};
+   obj.value = value;
+   obj.rect = Rect(0, 0, 0, 0);
 
-  return obj;
-  }
+   return obj;
+ }
 
-  function Board()
-  {
-  var obj = {};
+ function Board()
+ {
+   var obj = {};
 
-  obj.rect = Rect(0, 60, CANVAS_WIDTH, CANVAS_HEIGHT);
+   obj.rect = Rect(0, 60, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  obj.twod_arr = [
-  [Square(' '), Square(' '), Square(' ')],
-  [Square(' '), Square(' '), Square(' ')],
-  [Square(' '), Square(' '), Square(' ')]
-  ];
+   obj.twod_arr = [
+     [Square(' '), Square(' '), Square(' ')],
+      [Square(' '), Square(' '), Square(' ')],
+       [Square(' '), Square(' '), Square(' ')]
+   ];
 
-  obj.squares = function () { return this.twod_arr; }
+   obj.squares = function () { return this.twod_arr; }
 
-  // Iniitializes squares and sets their rects
-  obj.init = function () 
-  {	
-  // The x values for the first and second vertical lines
-  var l1_x = this.rect.x + (this.rect.width - this.rect.x) / 3;
-  var l2_x = this.rect.x + (this.rect.width - this.rect.x) * 2 / 3;
+   // Iniitializes squares and sets their rects
+   obj.init = function () 
+   {	
+        // The x values for the first and second vertical lines
+        var l1_x = this.rect.x + (this.rect.width - this.rect.x) / 3;
+        var l2_x = this.rect.x + (this.rect.width - this.rect.x) * 2 / 3;
 
-  // The y values for the first and second verticle lines 
-  var hl1_y = this.rect.y + (this.rect.height - this.rect.y) / 3;
-  var hl2_y = this.rect.y + (this.rect.height - this.rect.y) * 2 / 3;
+        // The y values for the first and second verticle lines 
+        var hl1_y = this.rect.y + (this.rect.height - this.rect.y) / 3;
+        var hl2_y = this.rect.y + (this.rect.height - this.rect.y) * 2 / 3;
 
-  var start = this.rect.y;
+        var start = this.rect.y;
 
-  for (i = 0; i < this.twod_arr.length; i++)
-  {
-  for (j = 0; j < this.twod_arr.length; j++)
-  {
-  var x = j * l1_x + FRAME_WIDTH;
-  var y = start + i * (hl1_y - this.rect.y) + FRAME_WIDTH;
-  var w = l2_x - l1_x - FRAME_WIDTH;
-  var h = hl2_y - hl1_y - FRAME_WIDTH;
+        for (i = 0; i < this.twod_arr.length; i++)
+        {
+          for (j = 0; j < this.twod_arr.length; j++)
+          {
+            var x = j * l1_x + FRAME_WIDTH;
+            var y = start + i * (hl1_y - this.rect.y) + FRAME_WIDTH;
+            var w = l2_x - l1_x - FRAME_WIDTH;
+            var h = hl2_y - hl1_y - FRAME_WIDTH;
 
-  this.twod_arr[i][j].rect = Rect(x, y, w, h);
-  }
-  }	
-  };
+            this.twod_arr[i][j].rect = Rect(x, y, w, h);
+          }
+        }	
+   };
 
-  obj.get_str = function()
-  {
-  var board_str = "";
+   obj.get_str = function()
+   {
+     var board_str = "";
 
-  for (i = 0; i < this.twod_arr.length; i++)
-  {
-  var row = this.twod_arr[i];
-  var row_str = "";
-  
-  for (j = 0; j < row.length; j++)
-  {
-  row_str += row[j].value;
+     for (i = 0; i < this.twod_arr.length; i++)
+     {
+       var row = this.twod_arr[i];
+       var row_str = "";
+       
+       for (j = 0; j < row.length; j++)
+       {
+         row_str += row[j].value;
+       }
 
-  if (i != this.twod_arr.length - 1 || j != row.length - 1)
-  row_str += ",";
-  }
+       board_str += row_str;
+       console.log(board_str);			
+     }
 
-  board_str += row_str;
-  console.log(board_str);			
-  }
+     return board_str;
+   };
 
-  return board_str;
-  };
+   obj.draw = function(canvas)
+   {
+     // The x values for the first and second vertical lines
+     var l1_x = this.rect.x + (this.rect.width - this.rect.x) / 3;
+     var l2_x = this.rect.x + (this.rect.width - this.rect.x) * 2 / 3;
 
-  obj.draw = function(canvas)
-  {
-  // The x values for the first and second vertical lines
-  var l1_x = this.rect.x + (this.rect.width - this.rect.x) / 3;
-  var l2_x = this.rect.x + (this.rect.width - this.rect.x) * 2 / 3;
+     // The y values for the first and second verticle lines 
+     var hl1_y = this.rect.y + (this.rect.height - this.rect.y) / 3;
+     var hl2_y = this.rect.y + (this.rect.height - this.rect.y) * 2 / 3;
 
-  // The y values for the first and second verticle lines 
-  var hl1_y = this.rect.y + (this.rect.height - this.rect.y) / 3;
-  var hl2_y = this.rect.y + (this.rect.height - this.rect.y) * 2 / 3;
+     // Draw the horizontal and vertical lines
+     draw_rectangle(canvas, {x: l1_x, y: this.rect.y}, FRAME_WIDTH, (this.rect.height - this.rect.y), "red");
+     draw_rectangle(canvas, {x: l2_x, y: this.rect.y}, FRAME_WIDTH, (this.rect.height - this.rect.y), "red");
+     draw_rectangle(canvas, {x: this.rect.x, y: hl1_y}, (this.rect.width - this.rect.x), FRAME_WIDTH, "red");
+     draw_rectangle(canvas, {x: this.rect.x, y: hl2_y}, (this.rect.width - this.rect.x), FRAME_WIDTH, "red");
 
-  // Draw the horizontal and vertical lines
-  draw_rectangle(canvas, {x: l1_x, y: this.rect.y}, FRAME_WIDTH, (this.rect.height - this.rect.y), "red");
-  draw_rectangle(canvas, {x: l2_x, y: this.rect.y}, FRAME_WIDTH, (this.rect.height - this.rect.y), "red");
-  draw_rectangle(canvas, {x: this.rect.x, y: hl1_y}, (this.rect.width - this.rect.x), FRAME_WIDTH, "red");
-  draw_rectangle(canvas, {x: this.rect.x, y: hl2_y}, (this.rect.width - this.rect.x), FRAME_WIDTH, "red");
+     for (i = 0; i < this.twod_arr.length; i++)
+     {
+       for (j = 0; j < this.twod_arr[i].length; j++)
+       {
+         var rect = this.twod_arr[i][j].rect;
 
-  for (i = 0; i < this.twod_arr.length; i++)
-  {
-  for (j = 0; j < this.twod_arr[i].length; j++)
-  {
-  var rect = this.twod_arr[i][j].rect;
+         if (this.twod_arr[i][j].value == 'O')
+         {
+           var r = (this.rect.height - this.rect.y) / 9;
+           draw_outlined_circle(canvas, 
+                                {x: rect.x + rect.width / 2, 
+                                 y: rect.y + rect.height / 2}, 
+                                 r, "red", 4);
+         }
+         else if (this.twod_arr[i][j].value == 'X')
+         {
+           var w = (this.rect.width - this.rect.x) / 9;
+           var h = (this.rect.height - this.rect.y) / 9;
+           draw_x(canvas, 
+                  {x: rect.x + rect.width / 2, 
+                   y: rect.y + rect.height / 2}, 
+                   w, h, "red", 4);
+         }
+       }
+     }
+   };
 
-  if (this.twod_arr[i][j].value == 'O')
-  {
-  var r = (this.rect.height - this.rect.y) / 9;
-  draw_outlined_circle(canvas, 
-  {x: rect.x + rect.width / 2, 
-  y: rect.y + rect.height / 2}, 
-  r, "red", 4);
-  }
-  else if (this.twod_arr[i][j].value == 'X')
-  {
-  var w = (this.rect.width - this.rect.x) / 9;
-  var h = (this.rect.height - this.rect.y) / 9;
-  draw_x(canvas, 
-  {x: rect.x + rect.width / 2, 
-  y: rect.y + rect.height / 2}, 
-  w, h, "red", 4);
-  }
-  }
-  }
-  };
+   obj.init();
 
-  obj.init();
-
-  return obj;
-  }
+   return obj;
+ }
 
 
-  function draw_rectangle(context, location, w, h, color)
-  {
-  context.beginPath();
-  context.rect(location.x, location.y, w, h);
-  context.fillStyle = color;
-  context.fill();
-  }
+ function draw_rectangle(context, location, w, h, color)
+ {
+   context.beginPath();
+   context.rect(location.x, location.y, w, h);
+   context.fillStyle = color;
+   context.fill();
+ }
 
-  function draw_outlined_circle(context, location, r, color, stroke_w)
-  {
-  context.beginPath();
-  context.arc(location.x, location.y, r, 2 * Math.PI, false);
-  context.strokeStyle = color;
-  context.lineWidth = stroke_w;
-  context.stroke();
-  }
+ function draw_outlined_circle(context, location, r, color, stroke_w)
+ {
+   context.beginPath();
+   context.arc(location.x, location.y, r, 2 * Math.PI, false);
+   context.strokeStyle = color;
+   context.lineWidth = stroke_w;
+   context.stroke();
+ }
 
-  function draw_line(context, x1, x2, y1, y2, color, stroke_w)
-  {
-  context.beginPath();
-  context.moveTo(x1, y1);
-  context.lineWidth = stroke_w;
-  context.lineTo(x2, y2);
-  context.strokeStyle = color;
-  context.stroke();
-  context.closePath();
-  }
+ function draw_line(context, x1, x2, y1, y2, color, stroke_w)
+ {
+   context.beginPath();
+   context.moveTo(x1, y1);
+   context.lineWidth = stroke_w;
+   context.lineTo(x2, y2);
+   context.strokeStyle = color;
+   context.stroke();
+   context.closePath();
+ }
 
-  function draw_x(context, center, w, h, color, stroke_w)
-  {
-  var x1, x2, y1, y2;
-  x1 = center.x - w;
-  x2 = center.x + w;
-  y1 = center.y - h;
-  y2 = center.y + h;
+ function draw_x(context, center, w, h, color, stroke_w)
+ {
+   var x1, x2, y1, y2;
+   x1 = center.x - w;
+   x2 = center.x + w;
+   y1 = center.y - h;
+   y2 = center.y + h;
 
-  // draw diagonal down left-to-right
-  // line
-  draw_line(context, x1, x2, y1, y2, color, stroke_w);
+   // draw diagonal down left-to-right
+   // line
+   draw_line(context, x1, x2, y1, y2, color, stroke_w);
 
-  // draw diagonal down right-to-left
-  // line
-  draw_line(context, x2, x1, y1, y2, color, stroke_w);
-  }
+   // draw diagonal down right-to-left
+   // line
+   draw_line(context, x2, x1, y1, y2, color, stroke_w);
+ }
 
-  function Rect(x, y, w, h)
-  {
-  var obj = {};
-  obj.x = x;
-  obj.y = y;
-  obj.width = w;
-  obj.height = h;
-  obj.right = function() { return this.x + this.width; }
-  obj.bottom = function() { return this.y + this.height; }
+ function Rect(x, y, w, h)
+ {
+   var obj = {};
+   obj.x = x;
+   obj.y = y;
+   obj.width = w;
+   obj.height = h;
+   obj.right = function() { return this.x + this.width; }
+   obj.bottom = function() { return this.y + this.height; }
 
-  obj.collide_point = function(x, y)
-  {
-  return ((x >= this.x && x <= this.right()) &&
-  (y >= this.y && y <= this.bottom()));
-  };
+   obj.collide_point = function(x, y)
+   {
+     return ((x >= this.x && x <= this.right()) &&
+             (y >= this.y && y <= this.bottom()));
+   };
 
-  return obj;
-  }
+   return obj;
+ }
 
-  function getMousePos(canvas, evt) 
-  {
-  var rect = canvas.getBoundingClientRect();
-  return {
-  x: evt.clientX - rect.left,
-  y: evt.clientY - rect.top
-  };
-  }
+ function getMousePos(canvas, evt) 
+ {
+   var rect = canvas.getBoundingClientRect();
+   return {
+     x: evt.clientX - rect.left,
+           y: evt.clientY - rect.top
+   };
+ }
 
-  function replaceAll(str, find, replace) 
-  {
-  var i = str.indexOf(find);
-  if (i > -1)
-  {
-  str = str.replace(find, replace); 
-  i = i + replace.length;
-  var st2 = str.substring(i);
-  
-  if(st2.indexOf(find) > -1)
-  str = str.substring(0,i) + replaceAll(st2, find, replace);
-  }
-  return str;
-  }
-  
-  function draw()
-  {
-  if (ctx)
-  {
-  // Set fill color
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+ function replaceAll(str, find, replace) 
+ {
+   var i = str.indexOf(find);
+   if (i > -1)
+   {
+     str = str.replace(find, replace); 
+     i = i + replace.length;
+     var st2 = str.substring(i);
+     
+     if(st2.indexOf(find) > -1)
+       str = str.substring(0,i) + replaceAll(st2, find, replace);
+   }
+   return str;
+ }
+ 
+ function draw()
+ {
+   if (ctx)
+   {
+     // Set fill color
+     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  game_board.draw(ctx);
+     game_board.draw(ctx);
 
-  ctx.fillStyle = "#000";	
-  ctx.font = "30px Verdana";
+     ctx.fillStyle = "#000";	
+     ctx.font = "30px Verdana";
 
-  if (!winner)
-  ctx.fillText(turn + "'s turn", 0, 30);
-  else
-  ctx.fillText(winning_turn + " won!", 0, 30);
-  }
-  }
+     if (!winner)
+       ctx.fillText(turn + "'s turn", 0, 30);
+     else
+       ctx.fillText(winning_turn + " won!", 0, 30);
+   }
+ }
 
-  function check_for_winner()
-  {
-  var board_str = game_board.get_str();
+ function check_for_winner()
+ {
+   var board_str = game_board.get_str();
 
-  board_str = replaceAll(board_str, ",", "");
+   board_str = replaceAll(board_str, ",", "");
 
-  console.log(board_str);
+   console.log(board_str);
 
-  var winning = [
-  // rows 
-  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+   var winning = [
+     // rows 
+     [0, 1, 2], [3, 4, 5], [6, 7, 8],
 
-  // cols 
-  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                            // cols 
+                            [0, 3, 6], [1, 4, 7], [2, 5, 8],
 
-  // diag l-r, r-l
-  [0, 4, 8], [2, 4, 6]
-  ];	
+                                                   // diag l-r, r-l
+                                                   [0, 4, 8], [2, 4, 6]
+   ];	
 
-  for (i = 0; i < winning.length; i++)
-  {
-  var s = "";
-  for (j = 0; j < winning[i].length; j++)
-  {
-  s += board_str[ winning[i][j] ];
-  }
+   for (i = 0; i < winning.length; i++)
+   {
+     var s = "";
+     for (j = 0; j < winning[i].length; j++)
+     {
+       s += board_str[ winning[i][j] ];
+     }
 
-  if (s == "XXX")
-  {
-  winner = true;
-  winning_turn = 'X';
-  break;
-  }
-  else if (s == "OOO")
-  {
-  winner = true;
-  winning_turn = 'O';
-  break;
-  }
-  }
-  }
+     if (s == "XXX")
+     {
+       winner = true;
+       winning_turn = 'X';
+       break;
+     }
+     else if (s == "OOO")
+     {
+       winner = true;
+       winning_turn = 'O';
+       break;
+     }
+   }
+ }
 
-  $(document).ready(function(){
-  canvas = $("#gameBoard");
-  canvas.attr('width', CANVAS_WIDTH.toString());
-  canvas.attr('height', CANVAS_HEIGHT.toString());
-  // Make sure you got it.
-  if (canvas.get(0).getContext) {
-  // Specify 2d canvas type.
-  ctx = canvas.get(0).getContext("2d");
+ $(document).ready(function(){
+   canvas = $("#gameBoard");
+   canvas.attr('width', CANVAS_WIDTH.toString());
+   canvas.attr('height', CANVAS_HEIGHT.toString());
+   // Make sure you got it.
+   if (canvas.get(0).getContext) {
+     // Specify 2d canvas type.
+     ctx = canvas.get(0).getContext("2d");
 
-  // Play the game
-  gameLoop = setInterval(function()
-  {
-  update();
-  draw();
-  }, 1000 / FPS);
+     // Play the game
+     gameLoop = setInterval(function()
+                            {
+                              update();
+                              draw();
+                            }, 1000 / FPS);
 
-  }
-  });
+   }
+ });
 
-  $(function() {
-  // Create a new client to connect to Faye
-  var client = new Faye.Client('/faye');
+ $(function() {
+   // Create a new client to connect to Faye
+   var client = new Faye.Client('/faye');
 
-  // Subscribe to the public channel
-  var public_subscription = client.subscribe('/messages/public', function(data) {
-  $('<p></p>').html(data.msg).appendTo('#chat_room');
-  });
-  
-  // Handle form submissions and post messages to faye
-  $('#new_message_form').submit(function(){
-  // Publish the message to the public channel
-  client.publish('/messages/public', {
-  msg: $('#message').val()
-  });
-  
-  // Clear the message box
-  $('#message').val('');
-  
-  // Don't actually submit the form, otherwise the page will refresh.
-  return false;
-  });
-  });
+   // Subscribe to the public channel
+   var public_subscription = client.subscribe('/messages/public', function(data) {
+     $('<p></p>').html(data.msg).appendTo('#chat_room');
+   });
+   
+   // Handle form submissions and post messages to faye
+   $('#new_message_form').submit(function(){
+     // Publish the message to the public channel
+     client.publish('/messages/public', {
+       msg: $('#message').val()
+     });
+     
+     // Clear the message box
+     $('#message').val('');
+     
+     // Don't actually submit the form, otherwise the page will refresh.
+     return false;
+   });
+ });
 
 </script>
 <div>
