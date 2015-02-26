@@ -7,10 +7,10 @@ class Match < ActiveRecord::Base
   private
 
   def notify
+    EM.run {
     client = Faye::Client.new('/faye')
-    client.publish('/messages/public', {
-                     msg: 'Hello'
-                   });
+    client.publish('/foo', 'text' => 'Hello world')
+    }
     # while True do
     #   RubyPython.start  
     #   sys = RubyPython.import("sys")
