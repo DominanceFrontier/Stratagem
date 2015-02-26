@@ -1,5 +1,7 @@
 class Ai < ActiveRecord::Base
   belongs_to :user
+  has_many :matches, as: :mario, dependent: :destroy
+  has_many :matches, as: :luigi, dependent: :destroy
   mount_uploader :location, ScriptUploader
   
   validates :user_id, presence: true

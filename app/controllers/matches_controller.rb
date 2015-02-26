@@ -1,11 +1,15 @@
 class MatchesController < ApplicationController
-
+  
   def create
-    @p1 = Ai.find(params[:p1_id])
-    @p2 = Ai.find(params[:champion])
-    @p1_path = @p1.location.current_path
-    @p2_path = @p2.location.current_path
-    @state = "         "
+    paras = match_params
+    paras[:luigi] = Rails.root.to_s + '/public' + paras[:luigi]
+    @match = Match.new(paras)
+    if @match.save
+      redirect_to @match
+    else
+      flash[:danger] = "Sorry something went wrong."
+      redirect_to root_path
+    end
   end
 
   def show
@@ -14,20 +18,8 @@ class MatchesController < ApplicationController
 
   private
 
-  def notify
-    #client = Faye::Client.new('/faye')
-
-    while True do
-      RubyPython.start  
-      sys = RubyPython.import("sys")
-      sys.path.append()
-      
-      test = RubyPython.import("get_move")
-      @text = test.get_move(params[:move][:match_state], params[:move][:time_left]).rubify 
-      
-      RubyPython.stop
-    end
-  end
-  
+  def match_params
+    params.require(:match).permit(:mario, :luigi)
+  end  
   
 end

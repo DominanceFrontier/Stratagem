@@ -1,2 +1,2 @@
-module MatchHelper
+module MatchesHelper
 end
