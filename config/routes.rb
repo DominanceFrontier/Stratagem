@@ -14,11 +14,10 @@ Rails.application.routes.draw do
   post 'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'
   get 'frankenstein' => 'ais#new'
-  get 'match' => 'static_pages#match'
-
   
   resources :users
   resources :ais
+  resources :matches
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

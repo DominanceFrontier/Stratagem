@@ -3,6 +3,8 @@ class AisController < ApplicationController
 
   def show
     @ai = Ai.find(params[:id])
+    @match = Match.new
+    @match.mario = @ai.id@ai.matches.build
   end
   
   def new

@@ -6,10 +6,12 @@
         <%= @ai.name %>
       </h1>
       <% if current_user != @ai.user %>
-        <%= form_tag("/match", method: "get") do %>
-          <%= hidden_field_tag(:p1_id, @ai.id) %>
-          <%= select_tag(:champion, options_from_collection_for_select(current_user.ais, :id, :name)) %>
-          <%= submit_tag("Challenge!") %>
+        <%= form_for @match do |f| %>
+          <%= render 'shared/error_messages', object: f.object %>
+          
+          <%= f.label "Your champion:" %>
+          <%= f.collection_select(:champion, current_user.ais, :id, :name) %>
+          <%= f.submit "Challenge!", class: "btn btn-primary" %>
         <% end %>
       <% end %>
     </section>
