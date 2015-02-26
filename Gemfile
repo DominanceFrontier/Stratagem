@@ -18,7 +18,7 @@ gem 'jbuilder',                '2.2.3'
 gem 'sdoc',                    '0.4.0', group: :doc
 gem 'faye-rails', '~> 2.0'
 gem 'thin'
-gem 'rubypython'
+#gem 'rubypython'
 
 group :development, :test do
   gem 'sqlite3',     '1.3.9'
