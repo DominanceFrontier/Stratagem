@@ -8,9 +8,13 @@
       <% if current_user != @ai.user %>
         <%= form_for @match do |f| %>
           <%= render 'shared/error_messages', object: f.object %>
-          
+          <%= f.hidden_field :mario, value: @ai.location.current_path %>
           <%= f.label "Your champion:" %>
-          <%= f.collection_select(:champion, current_user.ais, :id, :name) %>
+          <% locations = [] %>
+          <% current_user.ais.each do |ai| %>
+            <% locations.push(ai.location) %>
+          <% end %> 
+          <%= f.collection_select(:luigi, current_user.ais, :location, :name) %>
           <%= f.submit "Challenge!", class: "btn btn-primary" %>
         <% end %>
       <% end %>
