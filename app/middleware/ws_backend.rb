@@ -1,4 +1,4 @@
-# middlewares/ws_backend.rb
+# middleware/ws_backend.rb
 
 require 'faye/websocket'
 

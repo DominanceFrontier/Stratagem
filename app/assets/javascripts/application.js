@@ -14,5 +14,5 @@
 //= require jquery_ujs
 //= require bootstrap
 //= require turbolinks
-//= require faye
+//= require faye/websocket
 //= require_tree .
