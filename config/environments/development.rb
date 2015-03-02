@@ -38,4 +38,7 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # Redis-to-go
+  ENV["REDISTOGO_URL"] = 'redis://@localhost:6379'
 end

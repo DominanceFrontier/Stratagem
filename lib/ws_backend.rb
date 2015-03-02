@@ -1,14 +1,27 @@
-# middleware/ws_backend.rb
-
 require 'faye/websocket'
+require 'thread'
+require 'redis'
+require 'json'
+require 'erb'
 
 module TicTacToe
   class WsBackend
     KEEPALIVE_TIME = 15 # in seconds
+    CHANNEL        = "chat-demo"
 
     def initialize(app)
       @app     = app
       @clients = []
+      uri = URI.parse(ENV["REDISTOGO_URL"])
+      @redis = Redis.new(:url => ENV['REDISTOGO_URL'])
+      Thread.new do
+        redis_sub = Redis.new(:url => ENV['REDISTOGO_URL'])
+        redis_sub.subscribe(CHANNEL) do |on|
+          on.message do |channel, msg|
+            @clients.each {|ws| ws.send(msg) }
+          end
+        end
+      end
     end
 
     def call(env)
@@ -23,7 +36,7 @@ module TicTacToe
 
         ws.on :message do |event|
           p [:message, event.data]
-          @clients.each {|client| client.send(event.data)}
+           @redis.publish(CHANNEL, sanitize(event.data))
         end
 
         ws.on :close do |event|
@@ -38,5 +51,13 @@ module TicTacToe
         @app.call(env)
       end
     end
+
+    private
+    def sanitize(message)
+      json = JSON.parse(message)
+      json.each {|key, value| json[key] = ERB::Util.html_escape(value) }
+      JSON.generate(json)
+    end
+    
   end
 end
