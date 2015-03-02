@@ -15,7 +15,7 @@ module TicTacToe
       if Faye::WebSocket.websocket?(env)
         
         # WebSockets logic goes here
-        ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME })
+        ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME})
         ws.on :open do |event|
           p [:open, ws.object_id]
           @clients << ws
@@ -23,7 +23,7 @@ module TicTacToe
 
         ws.on :message do |event|
           p [:message, event.data]
-          @redis.publish(CHANNEL, sanitize(event.data))
+          @clients.each {|client| client.send(event.data)}
         end
 
         ws.on :close do |event|

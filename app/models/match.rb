@@ -1,5 +1,4 @@
 class Match < ActiveRecord::Base
-  after_create :notify
   
   validates :mario, presence: true
   validates :luigi, presence: true
