@@ -19,6 +19,7 @@ gem 'sdoc',                    '0.4.0', group: :doc
 gem 'faye-websocket'
 gem 'puma'
 gem 'redis'
+gem 'sidekiq'
 #gem 'rubypython'
 
 group :development, :test do
