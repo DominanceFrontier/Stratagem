@@ -1,4 +1,5 @@
 class MatchesController < ApplicationController
+  before_action :logged_in_user, only: [:show]
   
   def create
     paras = match_params
@@ -15,13 +16,19 @@ class MatchesController < ApplicationController
   def show
     @match = Match.find(params[:id])
     @scheme = ENV['RACK_ENV'] == "production" ? "wss://" : "ws://"
-    GameWorker.perform_async
+    GameWorker.perform_async @match.id
   end
 
   private
 
   def match_params
     params.require(:match).permit(:mario, :luigi)
-  end  
+  end
+
+  private
+
+  def correct_user
+    @user = Match.find(params[:id])
+  end
   
 end

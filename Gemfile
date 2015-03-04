@@ -20,6 +20,7 @@ gem 'faye-websocket'
 gem 'puma'
 gem 'redis'
 gem 'sidekiq'
+gem 'therubyracer'
 #gem 'rubypython'
 
 group :development, :test do
