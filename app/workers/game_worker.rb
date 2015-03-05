@@ -7,7 +7,7 @@ class GameWorker
     for i in 0..5 do
       sleep 10
       redis = Redis.new(:url => ENV['REDISTOGO_URL'])
-      redis.publish(:global, "{\"handle\":\"lolol#{i}\",\"text\":\"trololol\"}")
+      redis.publish("global", "{\"handle\":\"lolol#{i}\",\"text\":\"trololol\"}")
     end
   end
 end

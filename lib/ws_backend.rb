@@ -10,17 +10,16 @@ module TicTacToe
 
     def initialize(app)
       @app     = app
-      @channels = {global: []}
+      @channels = {"global" => []}
       @clients = {}
       #uri = URI.parse(ENV["REDISTOGO_URL"])
       @redis = Redis.new(:url => ENV['REDISTOGO_URL'])
       @thr = Thread.new do
         redis_sub = Redis.new(:url => ENV['REDISTOGO_URL'])
-        redis_sub.subscribe(:global) do |on|
+        redis_sub.subscribe("global") do |on|
           on.message do |channel, msg|
-            p channel
-            p msg
-            @channels[channel.to_sym].each {|ws| ws.send(msg) }
+            p [channel, msg]
+            @channels[channel].each {|ws| ws.send(msg) }
           end
         end
       end
@@ -33,8 +32,8 @@ module TicTacToe
         ws = Faye::WebSocket.new(env, nil, {ping: KEEPALIVE_TIME})
         ws.on :open do |event|
           p [:open, ws.object_id]
-          @channels[:global] << ws
-          @clients[ws.object_id.to_s] = :global
+          @channels["global"] << ws
+          @clients[ws.object_id.to_s] = "global"
           p @clients
         end
 
