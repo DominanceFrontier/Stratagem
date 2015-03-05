@@ -22,7 +22,7 @@ class MatchesController < ApplicationController
     
     @scheme = ENV['RACK_ENV'] == "production" ? "wss://" : "ws://"
     playttt(@match.id)
-    #GameWorker.perform_async @match.id
+    GameWorker.perform_async @match.id
   end
 
   private
