@@ -31,7 +31,7 @@ Game.prototype.isValidMove = function(board, move){
   return isWithinBounds(board, move) && onFreeTile(board, move);
 
   function isWithinBounds(board, move){
-    return move[0] >= 0 && move[0] <= 3 && move[1] >= 0 && move[0] <= 3;
+    return move[0] >= 0 && move[0] <= 2 && move[1] >= 0 && move[0] <= 2;
   }
 
   function onFreeTile(board, move){
@@ -39,9 +39,27 @@ Game.prototype.isValidMove = function(board, move){
   }
 } 
 
-Game.prototype.checkForWinner(board){
-  return checkRowsForWinner() || checkColumnsForWinner() || checkDiagonalsForWinner();
+Game.prototype.checkForWinner = function(board){
+  board = this.parseBoard(board);
+
+  return checkRowsForWinner(board) || checkColumnsForWinner(board) || checkDiagonalsForWinner(board);
+
+  function checkRowsForWinner(board){
+    return (board[0][0] == board[0][1] && board[0][1] == board[0][2] ||
+            board[1][0] == board[1][1] && board[1][1] == board[1][2] ||
+            board[2][0] == board[2][1] && board[2][1] == board[2][2])
+  }
 
   function checkColumnsForWinner(board){
+    return (board[0][0] == board[1][0] && board[1][0] == board[2][0] ||
+            board[0][1] == board[1][1] && board[1][1] == board[2][1] ||
+            board[0][2] == board[1][2] && board[1][2] == board[2][2])
+  }
+
+  function checkDiagonalsForWinner(board){
+    return (board[0][0] == board[1][1] && board[1][1] == board[2][2] ||
+            board[0][2] == board[1][1] && board[1][1] == board[2][0])
   }
 }
+
+var ttt = new Game();

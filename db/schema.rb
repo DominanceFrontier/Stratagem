@@ -28,10 +28,11 @@ ActiveRecord::Schema.define(version: 20150226103532) do
   create_table "matches", force: :cascade do |t|
     t.string   "mario"
     t.string   "luigi"
-    t.string   "result",     default: "open"
-    t.text     "state",      default: "         "
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.string   "result",      default: "open"
+    t.text     "state",       default: "[[\" \",\" \",\" \"],[\" \",\" \",\" \"],[\" \",\" \",\" \"]]"
+    t.text     "moveHistory", default: "[]"
+    t.datetime "created_at",                                                                            null: false
+    t.datetime "updated_at",                                                                            null: false
   end
 
   create_table "users", force: :cascade do |t|
