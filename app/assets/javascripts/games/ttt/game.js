@@ -7,6 +7,14 @@
 function Game(){
 }
 
+Game.prototype.parseBoard = function(board){
+  return JSON.parse(board);
+}
+
+Game.prototype.parseMove = function(move){
+  return JSON.parse(move);
+}
+
 Game.prototype.makeMove = function(board, move, piece){
   board = this.parseBoard(board);
   move = this.parseMove(move);
@@ -14,14 +22,6 @@ Game.prototype.makeMove = function(board, move, piece){
   board[move[0]][move[1]] = piece;
   
   return JSON.stringify(board);
-}
-
-Game.prototype.parseBoard = function(board){
-  return JSON.parse(board);
-}
-
-Game.prototype.parseMove = function(move){
-  return JSON.parse(move);
 }
 
 Game.prototype.isValidMove = function(board, move){
@@ -39,8 +39,9 @@ Game.prototype.isValidMove = function(board, move){
   }
 } 
 
-Game.prototype.checkWinner(board){
-  return this.checkColumnsForWinner() || this.checkRowsForWinner() || this.checkDiagonalsForWinner();
-}
+Game.prototype.checkForWinner(board){
+  return checkRowsForWinner() || checkColumnsForWinner() || checkDiagonalsForWinner();
 
-Game.prototype.
+  function checkColumnsForWinner(board){
+  }
+}
