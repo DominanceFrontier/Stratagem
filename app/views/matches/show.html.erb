@@ -1,3 +1,4 @@
+<% if @match.result == "open" %>
 <script>
   var scheme   = "<%= @scheme %>";
   var uri      = scheme + window.document.location.host + "/";
@@ -24,12 +25,14 @@
   });
   });
 </script>
+<% end %>
 
 <div>
   <canvas id="gameBoard" width="300" height="300">
   </canvas>
 </div>
 
+<% if @match.result == "open" %>
 <form id="input-form" class="form-inline">
   <div class="form-group">
     <input id="input-handle" type="text" class="form-control" placeholder="Enter handle" autofocus />
@@ -44,6 +47,7 @@
 </div>
 <div id="chat-text">
 </div>
+<% end %>
 
 <%= @match.mario + ", " + @match.luigi %>
 <%= @match.moveHistory %>

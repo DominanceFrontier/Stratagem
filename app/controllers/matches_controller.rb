@@ -14,15 +14,10 @@ class MatchesController < ApplicationController
   end
 
   def show
-    @match = Match.find(params[:id])
-
-    puts "\n\n\n"
-    p @match.state
-    puts "\n\n\n"
-    
+    @match = Match.find(params[:id])    
     @scheme = ENV['RACK_ENV'] == "production" ? "wss://" : "ws://"
     playttt(@match.id)
-    GameWorker.perform_async @match.id
+    #GameWorker.perform_async @match.id
   end
 
   private
@@ -48,14 +43,12 @@ class MatchesController < ApplicationController
     luigi_path = luigi[0...-1].join('/')
     luigi = luigi[-1][0...-3]
 
-    move = ""
-
     piece = 'X'
     
     cxt = V8::Context.new
     cxt.load("#{Rails.root.to_s}/app/assets/javascripts/games/ttt/game.js")
     ttt = cxt[:ttt]
-
+   
     while @match.result == "open" do
       
       if piece == 'X'
@@ -68,22 +61,17 @@ class MatchesController < ApplicationController
 
       puts "\n\n\n"
       p [path, player]
-      p @match.state
+      p [@match.state, piece]
       puts "\n\n\n"
       
-      # RubyPython.start  
-      # sys = RubyPython.import("sys")
-      # sys.path.append(path)
-      # p = RubyPython.import(player)
-      # sys.path.pop()
-      # move = p.get_move(@match.state)
-      # RubyPython.stop
-
-      move = "[1,2]"
-      
+      cmd = "python #{Rails.root.to_s}/runner.py #{path} #{player} #{@match.state.inspect}"
+      move, status = Open3.capture2(cmd)
+      #move = move.to_s
+      p [cmd, move, status]
       valid = ttt.isValidMove(@match.state, move)
-      p move
-      p valid
+
+      p [move, valid, status]
+      
       unless valid
         @match.result = player == mario ? "luigi" : "mario"
         @match.save
@@ -93,7 +81,7 @@ class MatchesController < ApplicationController
       @match.state = ttt.makeMove(@match.state, move, piece)
       @match.moveHistory = JSON.generate(JSON.parse(@match.moveHistory) << [move, piece])
 
-      if ttt.checkForWinner(@match.state)
+      if ttt.checkForWinner(@match.state, piece)
         @match.result = player == mario ? "mario" : "luigi"
       end
 

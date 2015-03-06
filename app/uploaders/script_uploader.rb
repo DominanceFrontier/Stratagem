@@ -51,14 +51,7 @@ class ScriptUploader < CarrierWave::Uploader::Base
   #   "something.jpg" if original_filename
   # end
   def filename
-    "#{secure_token}.#{file.extension}" if original_filename.present?
-  end
-
-  private
-  
-  def secure_token
-    var = :"@#{mounted_as}_secure_token"
-    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.uuid)
+    "#{original_filename[0...-3]}_#{Time.now.to_i}.#{file.extension}" if original_filename.present?
   end
 
 end

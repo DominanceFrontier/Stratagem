@@ -3,6 +3,7 @@ require 'thread'
 require 'redis'
 require 'json'
 require 'erb'
+require 'open3'
 
 module TicTacToe
   class WsBackend

@@ -21,7 +21,6 @@ gem 'puma'
 gem 'redis'
 gem 'sidekiq'
 gem 'therubyracer'
-gem 'rubypython'
 
 group :development, :test do
   gem 'sqlite3',     '1.3.9'

@@ -39,26 +39,28 @@ Game.prototype.isValidMove = function(board, move){
   }
 } 
 
-Game.prototype.checkForWinner = function(board){
+Game.prototype.checkForWinner = function(board, piece){
   board = this.parseBoard(board);
 
-  return checkRowsForWinner(board) || checkColumnsForWinner(board) || checkDiagonalsForWinner(board);
+  return (checkRowsForWinner(board, piece) ||
+          checkColumnsForWinner(board, piece) || 
+          checkDiagonalsForWinner(board, piece));
 
-  function checkRowsForWinner(board){
-    return (board[0][0] == board[0][1] && board[0][1] == board[0][2] ||
-            board[1][0] == board[1][1] && board[1][1] == board[1][2] ||
-            board[2][0] == board[2][1] && board[2][1] == board[2][2])
+  function checkRowsForWinner(board, piece){
+    return (board[0][0] == piece && board[0][1] == piece && board[0][2] == piece ||
+            board[1][0] == piece && board[1][1] == piece && board[1][2] == piece ||
+            board[2][0] == piece && board[2][1] == piece && board[2][2] == piece)
   }
 
-  function checkColumnsForWinner(board){
-    return (board[0][0] == board[1][0] && board[1][0] == board[2][0] ||
-            board[0][1] == board[1][1] && board[1][1] == board[2][1] ||
-            board[0][2] == board[1][2] && board[1][2] == board[2][2])
+  function checkColumnsForWinner(board, piece){
+    return (board[0][0] == piece && board[1][0] == piece && board[2][0] == piece ||
+            board[0][1] == piece && board[1][1] == piece && board[2][1] == piece ||
+            board[0][2] == piece && board[1][2] == piece && board[2][2] == piece)
   }
 
-  function checkDiagonalsForWinner(board){
-    return (board[0][0] == board[1][1] && board[1][1] == board[2][2] ||
-            board[0][2] == board[1][1] && board[1][1] == board[2][0])
+  function checkDiagonalsForWinner(board, piece){
+    return (board[0][0] == piece && board[1][1] == piece && board[2][2] == piece ||
+            board[0][2] == piece && board[1][1] == piece && board[2][0] == piece)
   }
 }
 
