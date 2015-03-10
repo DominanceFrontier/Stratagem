@@ -37,9 +37,18 @@ BoardView.prototype.update = function(state){
 BoardView.prototype.draw = function(context){
 }
 
-window.onload = function() {
 tttView = new GameView(document.getElementById('gameBoard'), 500, 500);
 tttBoardView = new BoardView("[[" "," "," "],[" "," "," "],[" "," "," "]]");
-tttBoardView.draw
+tttBoardView.draw = function(context){
+  function drawX(){
+  }
+  function drawO(){
+  }
+}
 
-tttView.registerElement(tttBoard
+tttView.registerElement(tttBoard);
+
+window.onload = function() {
+}
+
+
