@@ -16,7 +16,7 @@ class MatchesController < ApplicationController
   def show
     @match = Match.find(params[:id])    
     @scheme = ENV['RACK_ENV'] == "production" ? "wss://" : "ws://"
-    GameWorker.perform_async @match.id
+    GameWorker.perform_async @match.id if @match.result == "open"
   end
 
   private

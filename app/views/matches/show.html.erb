@@ -1,53 +1,185 @@
-<% if @match.result == "open" %>
 <script>
-  var scheme   = "<%= @scheme %>";
-  var uri      = scheme + window.document.location.host + "/";
-  var ws       = new WebSocket(uri);
-  ws.onmessage = function(message) {
-  var data = JSON.parse(message.data);
-  $("#chat-text").append("<div class='panel panel-default'><div class='panel-heading'>" + data.handle + "</div><div class='panel-body'>" + data.text + "</div></div>");
-  $("#chat-text").stop().animate({
-  scrollTop: $('#chat-text')[0].scrollHeight
-  }, 800);
-  };
+ function GameView(width, height){
+   this.canvas = document.createElement("canvas");
+   this.canvas.width = width;
+   this.canvas.height = height;
+   this.context = this.canvas.getContext("2d");
+   this.elements = [];
+ }
 
-  $(window).on('beforeunload', function(){
-  ws.close();
-  });
+ GameView.prototype.display = function(){
+   for (var i = 0; i < this.elements.length; ++i){
+     this.elements[i].draw(this.context);
+   }
+ }
 
-  $(function(){
-  $("#input-form").submit(function() {
-  var handle = $("#input-handle").val();
-  var text   = $("#input-text").val();
-  ws.send(JSON.stringify({ handle: handle, text: text }));
-  $("#input-text").val("");
-  return false;
-  });
-  });
+ GameView.prototype.registerElement = function(element){
+   this.elements.push(element);
+ }
+
+ GameView.prototype.removeElement = function(element){
+   index = this.elements.indexOf(element);
+   if (index > -1)
+     this.elements.slice(index, 1);
+ }
+
+ function BoardView(state){
+   this.state = state;
+ }
+
+ BoardView.prototype.update = function(state){
+   this.state = state;
+ }
+
+ BoardView.prototype.draw = function(context){
+ }
+ 
+ var tttState = <%= @match.state.html_safe %>;
+
+ tttView = new GameView(500, 500);
+ tttBoardView = new BoardView(tttState);
+
+ tttBoardView.draw = function(context){
+   width = context.canvas.clientWidth;
+   height = context.canvas.clientHeight;
+   context.beginPath();
+   context.strokeStyle = '#000'; 
+   context.lineWidth   = 4;
+
+   context.moveTo((width / 3), 0);
+   context.lineTo((width / 3), height);
+
+   context.moveTo((width / 3) * 2, 0);
+   context.lineTo((width / 3) * 2, height);
+
+   context.moveTo(0, (height / 3));
+   context.lineTo(width, (height / 3));
+
+   context.moveTo(0, (height / 3) * 2);
+   context.lineTo(width, (height / 3) * 2);
+
+   context.stroke();
+   context.closePath();
+
+   for (var r = 0; r < 3; ++r){
+     for (var c = 0; c < 3; ++c){
+       if (this.state[r][c] == 'X')
+         drawX(context, r, c);
+       else if (this.state[r][c] == 'O')
+         drawO(context, r, c);
+     }
+   }
+   
+   function drawX(context, x, y){
+     context.beginPath();
+
+     context.strokeStyle = '#ff0000'; 
+     context.lineWidth   = 4;
+
+     var offsetX = (width / 3) * 0.1;
+     var offsetY = (height / 3) * 0.1;
+
+     var beginX = x * (width / 3) + offsetX;
+     var beginY = y * (height / 3) + offsetY;
+
+     var endX = (x + 1) * (width / 3) - offsetX * 2;
+     var endY = (y + 1) * (height / 3) - offsetY * 2;
+
+     context.moveTo(beginX, beginY);
+     context.lineTo(endX, endY); 
+
+     context.moveTo(beginX, endY);
+     context.lineTo(endX, beginY); 	
+
+     context.stroke();
+     context.closePath();
+   }
+   
+   function drawO(context, x, y){
+     context.beginPath();
+
+     context.strokeStyle = '#0000ff'; 
+     context.lineWidth   = 4;
+
+     var offsetX = (width / 3) * 0.1;
+     var offsetY = (height / 3) * 0.1;
+
+     var beginX = x * (width / 3) + offsetX;
+     var beginY = y * (height / 3) + offsetY;
+
+     var endX = (x + 1) * (width / 3) - offsetX * 2;
+     var endY = (y + 1) * (height / 3) - offsetY * 2;
+
+     context.arc(beginX + ((endX - beginX) / 2),
+                           beginY + ((endY - beginY) / 2), 
+                                     (endX - beginX) / 2 , 
+                                      0, Math.PI * 2, true);
+
+     context.stroke();
+     context.closePath();
+   }
+ }
+
+ tttView.registerElement(tttBoardView);
+
+ $(function() {
+   document.getElementById("gameArea").appendChild(tttView.canvas);
+   tttView.display();
+ });
 </script>
-<% end %>
-
-<div>
-  <canvas id="gameBoard" width="500" height="500">
-  </canvas>
-</div>
 
 <% if @match.result == "open" %>
-<form id="input-form" class="form-inline">
-  <div class="form-group">
-    <input id="input-handle" type="text" class="form-control" placeholder="Enter handle" autofocus />
-  </div>
-  <div class="form-group">
-    <input id="input-text" type="text" class="form-control" placeholder="Enter chat text here!" autofocus />
-  </div>
-  <button class="btn btn-primary" type="submit">Send</button>
-</form>
-<div class="page-header">
-  <h1>Chat</h1>
-</div>
-<div id="chat-text">
-</div>
+  <script>
+   var scheme   = "<%= @scheme %>";
+   var uri      = scheme + window.document.location.host + "/";
+   var ws       = new WebSocket(uri);
+   ws.onmessage = function(message) {
+     var data = JSON.parse(message.data);
+     if ("result" in data){
+       document.getElementById("gameArea").appendChild(document.CreateTextNode("Result: " + data.result))
+     }
+     else{
+       tttState = JSON.parse(data.state);
+       tttBoardView.update(tttState);
+       tttView.display();
+       $("#move-history").append("<div class='panel panel-default'><div class='panel-heading'>" + data.piece + "</div><div class='panel-body'>" + data.move + "</div></div>");
+       $("#move-history").stop().animate({
+         scrollTop: $('#move-history')[0].scrollHeight
+       }, 800);
+     }
+   };
+
+   $(window).on('beforeunload', function(){
+     ws.close();
+   });
+  </script>
 <% end %>
 
-<%= @match.mario + ", " + @match.luigi %>
-<%= @match.moveHistory %>
+<div class="row">
+  <div class="col-md-6"  id="gameArea">
+    <% unless @match.result == "open" %>
+      <Strong>
+        Result: <%= @match.result %>
+      </Strong>
+      <br>
+    <% end %>
+  </div>
+  <div class="col-md-6">
+    <h1>Move History</h1>
+    <div id="move-history">
+      <% unless @match.result == "open" %>
+        <% JSON.parse(@match.moveHistory).each do |x|%>
+          <div class='panel panel-default'>
+            <div class='panel-heading'>
+              <%= x['piece'] %>
+            </div>
+            <div class='panel-body'>
+              <%= x['move'] %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+

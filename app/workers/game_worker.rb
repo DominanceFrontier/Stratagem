@@ -20,12 +20,10 @@ class GameWorker
     piece = 'X'
     
     cxt = V8::Context.new
-    cxt.load("#{Rails.root.to_s}/app/assets/javascripts/games/ttt/game.js")
+    cxt.load("#{Rails.root.to_s}/games/ttt/game.js")
     ttt = cxt[:ttt]
 
-    i = 0
     while @match.result == "open" do
-      i += 1
       sleep 10      
       if piece == 'X'
         path = mario_path
@@ -55,18 +53,27 @@ class GameWorker
       end
 
       @match.state = ttt.makeMove(@match.state, move, piece)
-      @match.moveHistory = JSON.generate(JSON.parse(@match.moveHistory) << [move, piece])
+      @match.moveHistory = JSON.generate(JSON.parse(@match.moveHistory) \
+                                         << {"piece" => piece, "move" => move})
 
-      if ttt.checkForWinner(@match.state, piece)
-        @match.result = player == mario ? "mario" : "luigi"
+      gameOver = ttt.checkForWinner(@match.state, piece)
+      if gameOver == piece
+        @match.result = piece
+      elsif gameOver == "T"
+        @match.result = "tie"
       end
 
       @match.save
 
-      piece = piece == 'X' ? 'O' : 'X'
+      tttStatus = {"piece" => piece, "move" => move, "state" => @match.state}
       
-      redis.publish("global", "{\"handle\":\"move#{i}\",\"text\":\"#{move}\"}")  
+      redis.publish("global", JSON.generate(tttStatus))
+
+      piece = piece == 'X' ? 'O' : 'X'
     end
+
+    redis.publish("global", JSON.generate({"result" => @match.result}))
+    
   end
 
 end

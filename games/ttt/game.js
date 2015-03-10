@@ -42,9 +42,14 @@ Game.prototype.isValidMove = function(board, move){
 Game.prototype.checkForWinner = function(board, piece){
   board = this.parseBoard(board);
 
-  return (checkRowsForWinner(board, piece) ||
-          checkColumnsForWinner(board, piece) || 
-          checkDiagonalsForWinner(board, piece));
+  if (checkRowsForWinner(board, piece) ||
+      checkColumnsForWinner(board, piece) || 
+      checkDiagonalsForWinner(board, piece))
+    return piece;
+  else if (checkforTie(board))
+    return "T";
+  else
+    return " ";
 
   function checkRowsForWinner(board, piece){
     return (board[0][0] == piece && board[0][1] == piece && board[0][2] == piece ||
@@ -61,6 +66,15 @@ Game.prototype.checkForWinner = function(board, piece){
   function checkDiagonalsForWinner(board, piece){
     return (board[0][0] == piece && board[1][1] == piece && board[2][2] == piece ||
             board[0][2] == piece && board[1][1] == piece && board[2][0] == piece)
+  }
+
+  function checkforTie(board){
+    for (var r = 0; r < 3; ++r){
+      for (var c = 0; c < 3; ++c){
+        if (board[r][c] == ' ') return false;
+      }
+    }
+    return true;
   }
 }
 
