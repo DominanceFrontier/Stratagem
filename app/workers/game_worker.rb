@@ -24,7 +24,7 @@ class GameWorker
     ttt = cxt[:ttt]
 
     while @match.result == "open" do
-      sleep 10      
+      sleep 3      
       if piece == 'X'
         path = mario_path
         player = mario

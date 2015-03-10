@@ -136,7 +136,10 @@
    ws.onmessage = function(message) {
      var data = JSON.parse(message.data);
      if ("result" in data){
-       document.getElementById("gameArea").appendChild(document.CreateTextNode("Result: " + data.result))
+       if (data.result == "T")
+         document.getElementById("result").appendChild(document.createTextNode("Result: It's a tie!!"));
+       else
+         document.getElementById("result").appendChild(document.createTextNode("Result: " + data.result + " has won!"));
      }
      else{
        tttState = JSON.parse(data.state);
@@ -157,12 +160,16 @@
 
 <div class="row">
   <div class="col-md-6"  id="gameArea">
-    <% unless @match.result == "open" %>
-      <Strong>
-        Result: <%= @match.result %>
-      </Strong>
+      <h1 id="result">
+        <% unless @match.result == "open" %>
+          <% if @match.result == "tie" %>
+            Result: It's a tie!!
+          <% else %>
+            Result: <%= @match.result %> has won!
+          <% end %>
+        <% end %>
+      </h1>
       <br>
-    <% end %>
   </div>
   <div class="col-md-6">
     <h1>Move History</h1>
