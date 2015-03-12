@@ -6,6 +6,8 @@ class CreateUsers < ActiveRecord::Migration
       t.string :username
       t.string :email
       t.string :password_digest
+      t.string :reset_digest
+      t.datetime :reset_sent_at
       
       t.timestamps null: false
     end

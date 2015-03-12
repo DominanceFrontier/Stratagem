@@ -47,7 +47,7 @@ class GameWorker
       p [move, valid, status]
       
       unless valid
-        @match.result = player == mario ? "luigi" : "mario"
+        @match.result = piece
         @match.save
         break
       end
