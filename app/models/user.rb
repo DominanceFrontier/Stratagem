@@ -1,14 +1,35 @@
 class User < ActiveRecord::Base
+  #----------------------------------------------------------------------------
+  # Accessors
+  #----------------------------------------------------------------------------
   attr_accessor :reset_token
+  #----------------------------------------------------------------------------
+  
+  #----------------------------------------------------------------------------
+  # Relationships
+  #----------------------------------------------------------------------------
   has_many :ais, dependent: :destroy
+  has_many :matches, as: :mario, dependent: :destroy
+  has_many :matches, as: :luigi, dependent: :destroy
+  #----------------------------------------------------------------------------
+  
+  #----------------------------------------------------------------------------
+  # Callbacks
+  #----------------------------------------------------------------------------
   before_save { self.email.downcase! }
+  #----------------------------------------------------------------------------
+  
+  #----------------------------------------------------------------------------
+  # Validations
+  #----------------------------------------------------------------------------
   validates :username, presence: true, length: { minimum: 5, maximum: 36 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   validates :email, presence: true, length: { minimum: 8, maximum: 255 },
   format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
   has_secure_password
   validates :password, length: { minimum: 6, maximum: 30 }
-
+  #----------------------------------------------------------------------------
+  
   # Returns the hash digest of the given string.
   def User.digest(string)
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :

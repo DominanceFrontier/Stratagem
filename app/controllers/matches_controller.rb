@@ -3,13 +3,22 @@ class MatchesController < ApplicationController
   
   def create
     paras = match_params
-    paras[:luigi] = Rails.root.to_s + '/public' + paras[:luigi]
+    if paras[:type] == "Ai"
+      paras[:mario] = Ai.find(paras[:mario])
+      paras[:luigi] = Ai.find(paras[:luigi])
+    elsif paras[:type] == "Human"
+      paras[:mario] = User.find(paras[:mario])
+      paras[:luigi] = User.find(paras[:luigi])
+    elsif paras[:type] == "Mixed"
+      paras[:mario] = Ai.find(paras[:mario])
+      paras[:luigi] = User.find(paras[:luigi])
+    end
     @match = Match.new(paras)
     if @match.save
       redirect_to @match
     else
       flash[:danger] = "Sorry something went wrong."
-      redirect_to root_path
+      redirect_to contact_path
     end
   end
 
@@ -26,9 +35,5 @@ class MatchesController < ApplicationController
   end
 
   private
-
-  def correct_user
-    @user = Match.find(params[:id])
-  end
   
 end

@@ -5,24 +5,21 @@
       <h1>
         <%= @ai.name %>
       </h1>
-      <% if current_user != @ai.user %>
-        <%= form_for @match do |f| %>
-          <%= render 'shared/error_messages', object: f.object %>
-          <%= f.hidden_field :mario, value: @ai.location.current_path %>
-          <%= f.label "Your champion:" %>
-          <% locations = [] %>
-          <% current_user.ais.each do |ai| %>
-            <% locations.push(ai.location) %>
-          <% end %> 
-          <%= f.collection_select(:luigi, current_user.ais, :location, :name) %>
-          <%= f.submit "Challenge!", class: "btn btn-primary" %>
-        <% end %>
-      <% end %>
+      <p>Stats: TODO</p>
     </section>
   </aside>
   <div class="col-md-8">
     <% if current_user == @ai.user %>
       <pre><%= render file: @ai.location.current_path %></pre>
+    <% else %>
+      <%= form_for @match do |f| %>
+        <%= render 'shared/error_messages', object: f.object %>
+        <%= f.hidden_field :type, value: "Ai" %>
+        <%= f.hidden_field :mario, value: @ai.id %>
+        <%= f.label "Your champion:" %>
+        <%= f.collection_select(:luigi, current_user.ais, :id, :name) %>
+        <%= f.submit "Challenge!", class: "btn btn-primary" %>
+      <% end %>
     <% end %>
   </div>
 </div>

@@ -26,14 +26,19 @@ ActiveRecord::Schema.define(version: 20150226103532) do
   add_index "ais", ["user_id"], name: "index_ais_on_user_id"
 
   create_table "matches", force: :cascade do |t|
-    t.string   "mario"
-    t.string   "luigi"
+    t.integer  "mario_id"
+    t.string   "mario_type"
+    t.integer  "luigi_id"
+    t.string   "luigi_type"
     t.string   "result",      default: "open"
     t.text     "state",       default: "[[\" \",\" \",\" \"],[\" \",\" \",\" \"],[\" \",\" \",\" \"]]"
     t.text     "moveHistory", default: "[]"
     t.datetime "created_at",                                                                            null: false
     t.datetime "updated_at",                                                                            null: false
   end
+
+  add_index "matches", ["luigi_type", "luigi_id"], name: "index_matches_on_luigi_type_and_luigi_id"
+  add_index "matches", ["mario_type", "mario_id"], name: "index_matches_on_mario_type_and_mario_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "firstname"
