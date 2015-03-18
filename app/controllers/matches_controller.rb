@@ -4,16 +4,18 @@ class MatchesController < ApplicationController
   def create
     paras = match_params
     if paras[:type] == "Ai"
-      paras[:mario] = Ai.find(paras[:mario])
-      paras[:luigi] = Ai.find(paras[:luigi])
+      p "holllla"
+      mario = Ai.find(paras[:mario])
+      luigi = Ai.find(paras[:luigi])
     elsif paras[:type] == "Human"
-      paras[:mario] = User.find(paras[:mario])
-      paras[:luigi] = User.find(paras[:luigi])
+      mario = User.find(paras[:mario])
+      luigi = User.find(paras[:luigi])
     elsif paras[:type] == "Mixed"
-      paras[:mario] = Ai.find(paras[:mario])
-      paras[:luigi] = User.find(paras[:luigi])
+      mario = Ai.find(paras[:mario])
+      luigi = User.find(paras[:luigi])
     end
-    @match = Match.new(paras)
+    p [mario, luigi]
+    @match = Match.new(mario: mario, luigi: luigi)
     if @match.save
       redirect_to @match
     else
@@ -31,7 +33,7 @@ class MatchesController < ApplicationController
   private
 
   def match_params
-    params.require(:match).permit(:mario, :luigi)
+    params.require(:match).permit(:type, :mario, :luigi)
   end
 
   private

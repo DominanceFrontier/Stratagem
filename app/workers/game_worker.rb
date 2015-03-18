@@ -9,11 +9,11 @@ class GameWorker
     
     @match = Match.find(match_id)
     
-    mario = @match.mario.split('/')
+    mario = @match.mario.location.current_path.split('/')
     mario_path = mario[0...-1].join('/')
     mario = mario[-1][0...-3]
 
-    luigi = @match.luigi.split('/')
+    luigi = @match.luigi.location.current_path.split('/')
     luigi_path = luigi[0...-1].join('/')
     luigi = luigi[-1][0...-3]
 
