@@ -1,0 +1,14 @@
+<% provide(:title, 'Matches') %>
+<h1>Matches</h1>
+
+<%= will_paginate %>
+
+<ul class="matches">
+  <% @matches.each do |match| %>
+    <% unless match.result == "open" %>
+      <%= render match %>
+    <% end %>
+  <% end %>
+</ul>
+
+<%= will_paginate %>

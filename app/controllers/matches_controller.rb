@@ -1,10 +1,13 @@
 class MatchesController < ApplicationController
   before_action :logged_in_user, only: [:show]
-  
+
+  def index
+    @matches = Match.paginate(page: params[:page])
+  end
+
   def create
     paras = match_params
     if paras[:type] == "Ai"
-      p "holllla"
       mario = Ai.find(paras[:mario])
       luigi = Ai.find(paras[:luigi])
     elsif paras[:type] == "Human"
@@ -14,7 +17,6 @@ class MatchesController < ApplicationController
       mario = Ai.find(paras[:mario])
       luigi = User.find(paras[:luigi])
     end
-    p [mario, luigi]
     @match = Match.new(mario: mario, luigi: luigi)
     if @match.save
       redirect_to @match

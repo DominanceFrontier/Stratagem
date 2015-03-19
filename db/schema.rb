@@ -18,8 +18,11 @@ ActiveRecord::Schema.define(version: 20150226103532) do
     t.string   "language"
     t.string   "location"
     t.integer  "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "wins",       default: 0
+    t.integer  "losses",     default: 0
+    t.integer  "ties",       default: 0
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   add_index "ais", ["user_id", "created_at"], name: "index_ais_on_user_id_and_created_at"
@@ -48,8 +51,11 @@ ActiveRecord::Schema.define(version: 20150226103532) do
     t.string   "password_digest"
     t.string   "reset_digest"
     t.datetime "reset_sent_at"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.integer  "wins",            default: 0
+    t.integer  "losses",          default: 0
+    t.integer  "ties",            default: 0
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
 end

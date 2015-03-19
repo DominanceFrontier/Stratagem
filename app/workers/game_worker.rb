@@ -18,6 +18,9 @@ class GameWorker
     luigi = luigi[-1][0...-3]
 
     piece = 'X'
+    player = @match.mario
+    opponent = @match.luigi
+    script = mario
     
     cxt = V8::Context.new
     cxt.load("#{Rails.root.to_s}/games/ttt/game.js")
@@ -27,10 +30,10 @@ class GameWorker
       sleep 3      
       if piece == 'X'
         path = mario_path
-        player = mario
+        script = mario
       else
         path = luigi_path
-        player = luigi
+        script = luigi
       end
 
       puts "\n\n\n"
@@ -38,7 +41,7 @@ class GameWorker
       p [@match.state, piece]
       puts "\n\n\n"
       
-      cmd = "python #{Rails.root.to_s}/runner.py #{path} #{player} #{@match.state.inspect}"
+      cmd = "python #{Rails.root.to_s}/runner.py #{path} #{script} #{@match.state.inspect}"
       move, status = Open3.capture2(cmd)
       #move = move.to_s
       p [cmd, move, status]
@@ -48,7 +51,11 @@ class GameWorker
       
       unless valid
         @match.result = piece
+        player.losses += 1
+        opponent.wins += 1
         @match.save
+        player.save
+        opponent.save
         break
       end
 
@@ -59,8 +66,16 @@ class GameWorker
       gameOver = ttt.checkForWinner(@match.state, piece)
       if gameOver == piece
         @match.result = piece
+        player.wins += 1
+        opponent.losses += 1
+        player.save
+        opponent.save
       elsif gameOver == "T"
         @match.result = "tie"
+        player.ties += 1
+        opponent.ties += 1
+        player.save
+        opponent.save
       end
 
       @match.save
@@ -70,6 +85,9 @@ class GameWorker
       redis.publish("global", JSON.generate(tttStatus))
 
       piece = piece == 'X' ? 'O' : 'X'
+      tmp = opponent
+      opponent = player
+      player = tmp
     end
 
     redis.publish("global", JSON.generate({"result" => @match.result}))

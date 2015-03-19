@@ -8,6 +8,10 @@ class CreateUsers < ActiveRecord::Migration
       t.string :password_digest
       t.string :reset_digest
       t.datetime :reset_sent_at
+      t.integer :wins, default: 0
+      t.integer :losses, default: 0
+      t.integer :ties, default: 0
+
       
       t.timestamps null: false
     end
