@@ -7,13 +7,18 @@
         <%= @user.username %>
       </h1>
       <p>
+        <Strong> Stats </Strong> <br>
         Wins: <%= @user.wins %> | losses: <%= @user.losses %> | ties: <%= @user.ties %>
+      </p>
+      <p>
+        <Strong> Match History </Strong> <br>
+        <% @user.matches. %>
       </p>
     </section>
   </aside>
   <div class="col-md-8">
+    <h3><%= @user.username %> has <%= pluralize(@user.ais.count, "bot") %> uploaded:</h3>
     <% if @user.ais.any? %>
-      <h3><%= @user.username %> has <%= pluralize(@user.ais.count, "bot") %> uploaded:</h3>
       <ol class="ais">
         <%= render @ais %>
       </ol>
