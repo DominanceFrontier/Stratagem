@@ -7,8 +7,15 @@ class Ai < ActiveRecord::Base
   belongs_to :user
   has_many :matches, as: :mario, dependent: :destroy
   has_many :matches, as: :luigi, dependent: :destroy
+  has_one :stat, as: :player, dependent: :destroy
   #----------------------------------------------------------------------------
-  
+
+  #----------------------------------------------------------------------------
+  # Callbacks
+  #----------------------------------------------------------------------------
+  before_create :build_default_stat
+  #----------------------------------------------------------------------------
+
   #----------------------------------------------------------------------------
   # Validations
   #----------------------------------------------------------------------------
@@ -19,6 +26,11 @@ class Ai < ActiveRecord::Base
   #----------------------------------------------------------------------------
   
   private
+
+  def build_default_stat
+    build_stat
+    true
+  end
 
   def script_size
     if location.size > 1.megabytes

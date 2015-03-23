@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+
   #----------------------------------------------------------------------------
   # Accessors
   #----------------------------------------------------------------------------
@@ -11,11 +12,13 @@ class User < ActiveRecord::Base
   has_many :ais, dependent: :destroy
   has_many :matches, as: :mario, dependent: :destroy
   has_many :matches, as: :luigi, dependent: :destroy
+  has_one :stat, as: :player, dependent: :destroy
   #----------------------------------------------------------------------------
   
   #----------------------------------------------------------------------------
   # Callbacks
   #----------------------------------------------------------------------------
+  before_create :build_default_stat
   before_save { self.email.downcase! }
   #----------------------------------------------------------------------------
   
@@ -57,6 +60,13 @@ class User < ActiveRecord::Base
   # Returns true if a password reset has expired.
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+
+  private
+
+  def build_default_stat
+    build_stat
+    true
   end
   
 end
