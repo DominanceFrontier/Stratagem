@@ -51,11 +51,11 @@ class GameWorker
       
       unless valid
         @match.result = piece
-        player.losses += 1
-        opponent.wins += 1
+        player.stat.losses += 1
+        opponent.stat.wins += 1
         @match.save
-        player.save
-        opponent.save
+        player.stat.save
+        opponent.stat.save
         break
       end
 
@@ -66,16 +66,16 @@ class GameWorker
       gameOver = ttt.checkForWinner(@match.state, piece)
       if gameOver == piece
         @match.result = piece
-        player.wins += 1
-        opponent.losses += 1
-        player.save
-        opponent.save
+        player.stat.wins += 1
+        opponent.stat.losses += 1
+        player.stat.save
+        opponent.stat.save
       elsif gameOver == "T"
         @match.result = "tie"
-        player.ties += 1
-        opponent.ties += 1
-        player.save
-        opponent.save
+        player.stat.ties += 1
+        opponent.stat.ties += 1
+        player.stat.save
+        opponent.stat.save
       end
 
       @match.save
