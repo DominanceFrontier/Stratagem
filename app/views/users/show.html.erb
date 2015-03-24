@@ -8,21 +8,27 @@
       </h1>
       <p>
         <Strong> Stats </Strong> <br>
-        Wins: <%= @user.wins %> | losses: <%= @user.losses %> | ties: <%= @user.ties %>
       </p>
       <p>
         <Strong> Match History </Strong> <br>
-        <% @user.matches. %>
+        <% if @user.matches.any? %>
+          <% user_matches = @user.matches.paginate(page: params[:page]) %>
+          <ol class="matches">
+            <%= render user_matches %>
+          </ol>
+          <%= will_paginate user_matches %>
+        <% end %>
       </p>
     </section>
   </aside>
   <div class="col-md-8">
     <h3><%= @user.username %> has <%= pluralize(@user.ais.count, "bot") %> uploaded:</h3>
     <% if @user.ais.any? %>
+      <% user_ais = @user.ais.paginate(page: params[:page]) %>
       <ol class="ais">
-        <%= render @ais %>
+        <%= render user_ais %>
       </ol>
-      <%= will_paginate @ais %>
+      <%= will_paginate user_ais %>
     <% end %>
   </div>
 </div>

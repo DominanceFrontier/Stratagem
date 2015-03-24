@@ -8,7 +8,6 @@ class UsersController < ApplicationController
   
   def show
     @user = User.find(params[:id])
-    @ais = @user.ais.paginate(page: params[:page])
   end
   
   def new
