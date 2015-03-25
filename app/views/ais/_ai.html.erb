@@ -1,11 +1,26 @@
-<li id="ai-<%= ai.id %>">
-  <span class="content"><%= link_to ai.name, ai %></span>
-  <span class="user"> owned by <%= link_to ai.user.username, ai.user %></span>
-  <span class="timestamp">
-    created <%= time_ago_in_words(ai.created_at) %> ago.
-  </span>
-  <% if current_user == @user %>
-    <br>
-    <pre><%= render file: ai.location.current_path %></pre>
-  <% end %>
-</li>
+<tr id="ai-<%= ai.id %>">
+  <td>
+  	<%= link_to ai.name, ai %>
+  </td>
+  <td>
+  	<%= link_to ai.user.username, ai.user %>
+  </td>
+  <td>
+  	<%= time_ago_in_words(ai.created_at) %> ago.
+  </td>
+  <td class="stats wins">
+  	<%= ai.stat.wins %>
+  </td>
+  <td class="stats losses">
+  	<%= ai.stat.losses %> 
+  </td>
+  <td class="stats ties">
+  	<%= ai.stat.ties %>
+  </td>
+  <td class="stats illegals">
+  	<%= ai.stat.illegals %>
+  </td>
+  <td class="stats winlossratio">
+  	<%= ai.stat.win_loss_ratio %>
+  </td>
+</tr>

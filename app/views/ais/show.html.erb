@@ -1,17 +1,48 @@
 <% provide(:title, @ai.user.username + " | " + @ai.name) %>
 <div class="row">
+  <div id="ai_info_header">
+    <h2>
+      <%= @ai.name %>
+    </h2>
+  </div>
   <aside class="col-md-4">
     <section class="ai_info">
-      <h1>
-        <%= @ai.name %>
-      </h1>
-      <p>
-        <Strong> Stats </Strong> <br>
-      </p>
+      <h3> Stats </h3> 
+      <table class="ais" border="1">
+        <thead>
+          <tr>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Ties</th>
+            <th>Illegal Moves</th>
+            <th>Win/Loss Ratio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="wins">
+              <%= @ai.stat.wins %>
+            </td>
+            <td class="losses">
+              <%= @ai.stat.losses %>
+            </td>
+            <td class="ties">
+              <%= @ai.stat.ties %>
+            </td>
+            <td class="illegals">
+              <%= @ai.stat.illegals %>
+            </td>
+            <td class="winlossratio">
+              <%= @ai.stat.win_loss_ratio %> 
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </section>
   </aside>
-  <div class="col-md-8">
+  <div class="col-md-8 ai_side_info">
     <% if current_user == @ai.user %>
+      <h3>The Code</h3>
       <pre><%= render file: @ai.location.current_path %></pre>
     <% else %>
       <%= form_for @match do |f| %>

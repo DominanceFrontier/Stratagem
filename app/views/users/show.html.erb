@@ -1,33 +1,76 @@
 <% provide(:title, @user.username) %>
 <div class="row">
+  <div id="user_info_header">
+    <h2>
+      <%= avatar_for @user %>
+      <%= @user.username %>
+    </h2>
+  </div>
   <aside class="col-md-4">
     <section class="user_info">
-      <h1>
-        <%= avatar_for @user %>
-        <%= @user.username %>
-      </h1>
-      <p>
-        <Strong> Stats </Strong> <br>
-      </p>
-      <p>
-        <Strong> Match History </Strong> <br>
+      <h3> Stats </h3>
+      <table class="userstats" border="1">
+        <thead>
+          <tr>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Ties</th>
+            <th>Win/Loss Ratio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="wins">
+              <%= @user.stat.wins %>
+            </td>
+            <td class="losses">
+              <%= @user.stat.losses %>
+            </td>
+            <td class="ties">
+              <%= @user.stat.ties %>
+            </td>
+            <td class="winlossratio">
+              <%= @user.stat.win_loss_ratio %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        <br>
+        <h3> Match History </h3>
         <% if @user.matches.any? %>
           <% user_matches = @user.matches.paginate(page: params[:page]) %>
           <ol class="matches">
             <%= render user_matches %>
           </ol>
           <%= will_paginate user_matches %>
+        <% else %>
+          <p>(<i><%= @user.username %></i> has not played any matches)</p>
         <% end %>
-      </p>
+      </div>
     </section>
   </aside>
   <div class="col-md-8">
     <h3><%= @user.username %> has <%= pluralize(@user.ais.count, "bot") %> uploaded:</h3>
     <% if @user.ais.any? %>
       <% user_ais = @user.ais.paginate(page: params[:page]) %>
-      <ol class="ais">
-        <%= render user_ais %>
-      </ol>
+      <table class="ais" border="1">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Owned By</th>
+            <th>Created at</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Ties</th>
+            <th>Illegal Moves</th>
+            <th>Win/Loss Ratio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= render user_ais %>
+        </tbody>
+      </table>
       <%= will_paginate user_ais %>
     <% end %>
   </div>

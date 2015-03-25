@@ -1,3 +1,40 @@
 // Place all the styles related to the Users controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+#user_info_header { width: 100%; }
+
+table.ais, table.userstats
+{ 
+	width: 100%; 
+	-webkit-box-shadow: -1px 2px 5px 0px rgba(0,0,0,0.75);
+	-moz-box-shadow: -1px 2px 5px 0px rgba(0,0,0,0.75);
+	box-shadow: -1px 2px 5px 0px rgba(0,0,0,0.75);
+}
+
+table.userstats { width: 100%; }
+
+table.ais tbody tr, table.userstats tbody tr 
+{
+	&:hover 
+	{
+		background-color: #eeeeee;
+	}
+}
+
+table.ais th, table.ais td, table.userstats th, table.userstats td
+{
+	padding: 5px;
+}
+
+table.ais th, table.userstats th
+{
+	background-color: #aabbbc; 
+}
+
+table tr td.wins { color: #0E7805; font-weight: bolder; }
+table tr td.losses { color: #FA0F2A; font-weight: bolder; }
+table tr td.ties { color: #1B0FFA; font-weight: bolder; }
+table tr td.illegals { color: #FA880F; font-weight: boler; }
+
+table tr td span { color: #000; display: inline; }
