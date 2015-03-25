@@ -33,7 +33,8 @@ module TicTacToe
           @clients[ws_id] = "global"
           msg = { "welcome" => ws_id }
           @redis.publish(@clients[ws_id], JSON.generate(msg))
-          p @clients[ws_id]
+          p @channel_list
+          p @clients
         end
 
         ws.on :message do |event|
@@ -48,19 +49,21 @@ module TicTacToe
           #
           if event.data.include? "ch"
             msg = JSON.parse(event.data)
+            new_channel = msg["ch"].to_s
             @channels[@clients[ws_id]].delete(ws)
-            @channel_list << msg["ch"]
-            @clients[ws_id] = msg["ch"]
-            if @channels.has_key? msg["ch"]
-              @channels[msg["ch"]] << ws
+            @channel_list << new_channel
+            @clients[ws_id] = new_channel
+            if @channels.has_key? new_channel
+              @channels[new_channel] << ws
             else
-              @channels[msg["ch"]] = [ws]
+              @channels[new_channel] = [ws]
             end
             subscribe
           else
             @redis.publish(@clients[ws_id], sanitize(event.data))
           end
-          p @clients[ws_id]
+          p ["channel_list", @channel_list]
+          p ["client_list with their channels", @clients]
         end
 
         ws.on :close do |event|
@@ -92,8 +95,9 @@ module TicTacToe
         redis_sub = Redis.new(:url => ENV['REDISTOGO_URL'])
         redis_sub.subscribe(@channel_list) do |on|
           on.message do |channel, msg|
-            p [channel, msg]
+            p ["channel and message", channel, msg]
             @channels[channel].each {|ws| ws.send(msg) }
+            p ["Successfully sent!"]
           end
         end
       end
