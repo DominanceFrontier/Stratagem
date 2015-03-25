@@ -8,4 +8,3 @@ Members of Dominance Frontier:
 1. Ryan Frappier
 2. Taylor Bennett
 3. Ujjwal Jung Pandey
-4. William Whitacre
