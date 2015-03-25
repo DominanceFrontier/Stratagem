@@ -6,6 +6,7 @@ class GameWorker
   def perform(match_id)
 
     redis = Redis.new(:url => ENV['REDISTOGO_URL'])
+    redis_channel = match_id.to_s
     
     @match = Match.find(match_id)
     
@@ -82,7 +83,7 @@ class GameWorker
 
       tttStatus = {"piece" => piece, "move" => move, "state" => @match.state}
       
-      redis.publish("global", JSON.generate(tttStatus))
+      redis.publish(redis_channel, JSON.generate(tttStatus))
 
       piece = piece == 'X' ? 'O' : 'X'
       tmp = opponent
@@ -90,7 +91,7 @@ class GameWorker
       player = tmp
     end
 
-    redis.publish("global", JSON.generate({"result" => @match.result}))
+    redis.publish(redis_channel, JSON.generate({"result" => @match.result}))
     
   end
 

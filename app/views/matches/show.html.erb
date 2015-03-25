@@ -135,7 +135,9 @@
    var ws       = new WebSocket(uri);
    ws.onmessage = function(message) {
      var data = JSON.parse(message.data);
-     if ("result" in data){
+     if ("welcome" in data)
+       ws.send(<% @match.id.to_s %>)
+     else if ("result" in data){
        if (data.result == "T")
          document.getElementById("result").appendChild(document.createTextNode("Result: It's a tie!!"));
        else
