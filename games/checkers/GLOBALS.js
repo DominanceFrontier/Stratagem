@@ -1,0 +1,8 @@
+
+var CANVAS_WIDTH = 640;
+var CANVAS_HEIGHT = 700;
+var BOARD_ROWS = 8;
+var BOARD_COLS = 8;
+var TILE_WIDTH = 80;
+var TILE_HEIGHT = 80;
+var FPS = 30;
