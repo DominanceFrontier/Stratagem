@@ -41,14 +41,32 @@ class GameWorker
       p [path, player]
       p [@match.state, piece]
       puts "\n\n\n"
-      
+
+      # Maybe factor this out into a private method later, but arguments nonsense only?
+      # Just calls the runner and times it, pretty much.
+      # TODO: Add a time selection option and pass the time here to do the actual time
+      # management.
       cmd = "python #{Rails.root.to_s}/runner.py #{path} #{script} #{@match.state.inspect}"
-      move, status = Open3.capture2(cmd)
-      #move = move.to_s
-      p [cmd, move, status]
+      r, w = IO.pipe
+      pid = spawn(cmd, out: w)
+      start_time = Process.times
+      Process.wait pid
+      w.close
+      move = r.read
+      r.close
+      if move
+        p ["success!", move]
+      else
+        p ["failure!", "timed out?"]
+      end
+      end_time = Process.times
+      total_time = end_time.cutime - start_time.cutime + end_time.cstime - start_time.cstime
+      total_time = (total_time * 1000).to_i
+
+      p [cmd, move, total_time]
       valid = ttt.isValidMove(@match.state, move)
 
-      p [move, valid, status]
+      p [move, valid]
       
       unless valid
         @match.result = piece
