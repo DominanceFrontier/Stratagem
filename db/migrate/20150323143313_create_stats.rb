@@ -6,6 +6,7 @@ class CreateStats < ActiveRecord::Migration
       t.integer :losses, default: 0
       t.integer :ties, default: 0
       t.integer :illegals, default: 0
+      t.integer :timeouts, default: 0
       
       t.timestamps null: false
     end

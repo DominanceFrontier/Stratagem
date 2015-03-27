@@ -1,26 +1,29 @@
 <tr id="ai-<%= ai.id %>">
   <td>
-  	<%= link_to ai.name, ai %>
+    <%= link_to ai.name, ai %>
   </td>
   <td>
-  	<%= link_to ai.user.username, ai.user %>
+    <%= link_to ai.user.username, ai.user %>
   </td>
   <td>
-  	<%= time_ago_in_words(ai.created_at) %> ago.
+    <%= time_ago_in_words(ai.created_at) %> ago.
   </td>
   <td class="stats wins">
-  	<%= ai.stat.wins %>
+    <%= ai.stat.wins %>
   </td>
   <td class="stats losses">
-  	<%= ai.stat.losses %> 
+    <%= ai.stat.losses %> 
   </td>
   <td class="stats ties">
-  	<%= ai.stat.ties %>
+    <%= ai.stat.ties %>
   </td>
   <td class="stats illegals">
-  	<%= ai.stat.illegals %>
+    <%= ai.stat.illegals %>
+  </td>
+  <td class="stats timeouts">
+    <%= ai.stat.timeouts %>
   </td>
   <td class="stats winlossratio">
-  	<%= ai.stat.win_loss_ratio %>
+    <%= ai.stat.win_percentage %>
   </td>
 </tr>

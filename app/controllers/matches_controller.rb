@@ -7,6 +7,7 @@ class MatchesController < ApplicationController
 
   def create
     paras = match_params
+    
     if paras[:type] == "Ai"
       mario = Ai.find(paras[:mario])
       luigi = Ai.find(paras[:luigi])
@@ -17,13 +18,16 @@ class MatchesController < ApplicationController
       mario = Ai.find(paras[:mario])
       luigi = User.find(paras[:luigi])
     end
-    @match = Match.new(mario: mario, luigi: luigi)
+    
+    @match = Match.new(mario: mario, luigi: luigi, time_alloted: paras[:time_alloted])
+
     if @match.save
       redirect_to @match
     else
       flash[:danger] = "Sorry something went wrong."
       redirect_to contact_path
     end
+    
   end
 
   def show
@@ -35,7 +39,7 @@ class MatchesController < ApplicationController
   private
 
   def match_params
-    params.require(:match).permit(:type, :mario, :luigi)
+    params.require(:match).permit(:type, :mario, :luigi, :time_alloted)
   end
 
   private

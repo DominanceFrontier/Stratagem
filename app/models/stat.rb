@@ -12,14 +12,12 @@ class Stat < ActiveRecord::Base
   validates :player, presence: true
   #----------------------------------------------------------------------------
   
-  def win_loss_ratio
-    if self.wins == 0
-      return 0.to_f
-    elsif self.losses == 0
-      return self.wins.to_f 
-    else 
-      return (self.wins / self.losses).to_f
-    end 
-  end 
+  def win_percentage
+    begin
+      return (self.wins / self.player.matches.count * 100).round(2)
+    rescue ZeroDivisionError
+      return 100
+    end
+  end
 
 end

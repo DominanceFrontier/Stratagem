@@ -30,11 +30,12 @@ ActiveRecord::Schema.define(version: 20150323143313) do
     t.string   "mario_type"
     t.integer  "luigi_id"
     t.string   "luigi_type"
-    t.string   "result",      default: "open"
-    t.text     "state",       default: "[[\" \",\" \",\" \"],[\" \",\" \",\" \"],[\" \",\" \",\" \"]]"
-    t.text     "moveHistory", default: "[]"
-    t.datetime "created_at",                                                                            null: false
-    t.datetime "updated_at",                                                                            null: false
+    t.string   "result",       default: "open"
+    t.integer  "time_alloted"
+    t.text     "state",        default: "[[\" \",\" \",\" \"],[\" \",\" \",\" \"],[\" \",\" \",\" \"]]"
+    t.text     "moveHistory",  default: "[]"
+    t.datetime "created_at",                                                                             null: false
+    t.datetime "updated_at",                                                                             null: false
   end
 
   add_index "matches", ["luigi_type", "luigi_id"], name: "index_matches_on_luigi_type_and_luigi_id"
@@ -47,6 +48,7 @@ ActiveRecord::Schema.define(version: 20150323143313) do
     t.integer  "losses",      default: 0
     t.integer  "ties",        default: 0
     t.integer  "illegals",    default: 0
+    t.integer  "timeouts",    default: 0
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end

@@ -15,7 +15,8 @@
             <th>Wins</th>
             <th>Losses</th>
             <th>Ties</th>
-            <th>Win/Loss Ratio</th>
+            <th>Time Outs</th>
+            <th>Win Percentage</th>
           </tr>
         </thead>
         <tbody>
@@ -29,8 +30,11 @@
             <td class="ties">
               <%= @user.stat.ties %>
             </td>
+            <td class="timeouts">
+              <%= @user.stat.timeouts %>
+            </td>
             <td class="winlossratio">
-              <%= @user.stat.win_loss_ratio %>
+              <%= @user.stat.win_percentage %>
             </td>
           </tr>
         </tbody>
@@ -64,7 +68,8 @@
             <th>Losses</th>
             <th>Ties</th>
             <th>Illegal Moves</th>
-            <th>Win/Loss Ratio</th>
+            <th>Time Outs</th>
+            <th>Win Percentage</th>
           </tr>
         </thead>
         <tbody>

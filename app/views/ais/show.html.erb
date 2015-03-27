@@ -15,7 +15,8 @@
             <th>Losses</th>
             <th>Ties</th>
             <th>Illegal Moves</th>
-            <th>Win/Loss Ratio</th>
+            <th>Time Outs</th>
+            <th>Win Percentage</th>
           </tr>
         </thead>
         <tbody>
@@ -32,8 +33,11 @@
             <td class="illegals">
               <%= @ai.stat.illegals %>
             </td>
+            <td class="timeouts">
+              <%= @ai.stat.timeouts %>
+            </td>
             <td class="winlossratio">
-              <%= @ai.stat.win_loss_ratio %> 
+              <%= @ai.stat.win_percentage %> 
             </td>
           </tr>
         </tbody>
@@ -45,13 +49,16 @@
       <h3>The Code</h3>
       <pre><%= render file: @ai.location.current_path %></pre>
     <% else %>
+      <h3>Challenge <%= @ai.name %> for a game!</h3>
       <%= form_for @match do |f| %>
         <%= render 'shared/error_messages', object: f.object %>
         <%= f.hidden_field :type, value: "Ai" %>
         <%= f.hidden_field :mario, value: @ai.id %>
         <%= f.label "Your champion:" %>
         <%= f.collection_select(:luigi, current_user.ais, :id, :name) %>
-        <%= f.submit "Challenge!", class: "btn btn-primary" %>
+        <%= f.label "Time for the match (in milliseconds):" %>
+        <%= f.number_field :time_alloted, value: 300000 %>
+        <%= f.submit "Godspeed!", class: "btn btn-primary" %>
       <% end %>
     <% end %>
   </div>
