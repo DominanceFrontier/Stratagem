@@ -1,19 +1,16 @@
-class Match < ActiveRecord::Base
-  
+class Game < ActiveRecord::Base
+
   #----------------------------------------------------------------------------
   # Relationships
   #----------------------------------------------------------------------------
-  belongs_to :mario, polymorphic: true
-  belongs_to :luigi, polymorphic: true
-  belongs_to :game
+  has_many :matches
   #----------------------------------------------------------------------------
 
   #----------------------------------------------------------------------------
   # Validations
   #----------------------------------------------------------------------------
-  validates :mario, presence: true
-  validates :luigi, presence: true
-  validates :time_alloted, presence: true
+  validates :name, presence: true
+  validates :path, presence: true
   #----------------------------------------------------------------------------
-  
+
 end
