@@ -1,15 +1,15 @@
 cmd = "python /home/student/Desktop/Ujjwal/Stratagem/runner.py /home/student/Desktop/Ujjwal/Stratagem get_move \"[[\\\"X\\\",\\\"O\\\",\\\"X\\\"],[\\\"O\\\",\\\"O\\\",\\\"X\\\"],[\\\"X\\\",\\\" \\\",\\\"O\\\"]]\""
 r, w = IO.pipe
-pid = spawn(cmd, out: w)
+pid = spawn(cmd, rlimit_cpu: 2, out: w)
 start_time = Process.times
 Process.wait pid
 w.close
 move = r.read
 r.close
-if move
-  p ["success!", move]
-else
+if move.empty?
   p ["failure!", "timed out?"]
+else
+  p ["success!", move]
 end
 end_time = Process.times
 p start_time

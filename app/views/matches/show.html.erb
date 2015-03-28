@@ -63,9 +63,9 @@
 
    for (var r = 0; r < 3; ++r){
      for (var c = 0; c < 3; ++c){
-       if (this.state[r][c] == 'X')
+       if (this.state[r][c] == 'x')
          drawX(context, r, c);
-       else if (this.state[r][c] == 'O')
+       else if (this.state[r][c] == 'o')
          drawO(context, r, c);
      }
    }
@@ -142,7 +142,7 @@
      if ("welcome" in data)
        console.log(data);
      else if ("result" in data){
-       if (data.result == "T")
+       if (data.result == "t")
          document.getElementById("result").appendChild(document.createTextNode("Result: It's a tie!!"));
        else
          document.getElementById("result").appendChild(document.createTextNode("Result: " + data.result + " has won!"));

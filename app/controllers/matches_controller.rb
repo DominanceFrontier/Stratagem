@@ -18,8 +18,9 @@ class MatchesController < ApplicationController
       mario = Ai.find(paras[:mario])
       luigi = User.find(paras[:luigi])
     end
-    
-    @match = Match.new(mario: mario, luigi: luigi, time_alloted: paras[:time_alloted])
+
+    time_alloted = paras[:time_alloted]
+    @match = Match.new(mario: mario, luigi: luigi, time_alloted: time_alloted)
 
     if @match.save
       redirect_to @match

@@ -1,7 +1,7 @@
 import random, json, time
 
-def get_move(state, time_left=None):
-    for i in xrange(100000):
+def get_move(state, time_left=None, player=None):
+    for i in xrange(100000000):
         pass
     state = json.loads(state)
     openings = [tile for row in state for tile in row]

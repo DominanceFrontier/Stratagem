@@ -16,6 +16,9 @@
 !/log/.keep
 /tmp
 
+# Ignore redis dump
+dump.rdb
+
 # Ignore uploaded python files.
 /public/uploads/**/*.py
 /public/uploads/**/*.pyc
