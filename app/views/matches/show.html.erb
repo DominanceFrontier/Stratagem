@@ -1,4 +1,6 @@
 <script>
+ var states = [];
+
  function GameView(width, height){
    this.canvas = document.createElement("canvas");
    this.canvas.width = width;
@@ -28,6 +30,7 @@
  }
 
  BoardView.prototype.update = function(state){
+
    this.state = state;
  }
 
@@ -149,12 +152,15 @@
      }
      else{
        tttState = JSON.parse(data.state);
+       console.log("data:");
+       console.log(data);
        tttBoardView.update(tttState);
        tttView.display();
        $("#move-history").append("<div class='panel panel-default'><div class='panel-heading'>" + data.piece + "</div><div class='panel-body'>" + data.move + "</div></div>");
        $("#move-history").stop().animate({
          scrollTop: $('#move-history')[0].scrollHeight
        }, 800);
+       states.push(tttState);
      }
    };
 
@@ -184,12 +190,27 @@
         <% JSON.parse(@match.moveHistory).each do |x|%>
           <div class='panel panel-default'>
             <div class='panel-heading'>
-              <%= x['piece'] %>
+              <% if x['piece'] == 'x' %>
+                <% if @match.mario.is_a? User %>
+                  <%= @match.mario.username %>
+                <% else %>
+                  <%= @match.mario.user.username %>'s AI <b><%= link_to @match.mario.name, @match.mario %></b>
+                <% end %>
+              <% else %>
+                <% if @match.mario.is_a? User %>
+                  <%= @match.luigi.username %>
+                <% else %>
+                  <%= @match.luigi.user.username %>'s AI <b><%= link_to @match.luigi.name, @match.luigi %></b>
+                <% end %>
+              <% end %>
+              placed an <%= x['piece'] %> at
             </div>
             <div class='panel-body'>
               <%= x['move'] %>
             </div>
           </div>
+
+          <script> states.push(x['move']); </script> 
         <% end %>
       <% end %>
     </div>
