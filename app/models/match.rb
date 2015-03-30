@@ -1,3 +1,8 @@
+# TODO: Fix match associations. 
+# Issue: The second has_many matches
+#        overwrites the first. 
+# Must find a way to merge the two
+
 class Match < ActiveRecord::Base
   
   #----------------------------------------------------------------------------

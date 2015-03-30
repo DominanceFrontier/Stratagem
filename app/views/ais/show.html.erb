@@ -5,7 +5,7 @@
       <%= @ai.name %>
     </h2>
   </div>
-  <aside class="col-md-4">
+  <aside class="col-md-6">
     <section class="ai_info">
       <h3> Stats </h3> 
       <table class="ais" border="1">
@@ -44,7 +44,7 @@
       </table>
     </section>
   </aside>
-  <div class="col-md-8 ai_side_info">
+  <div class="col-md-6 ai_side_info">
     <% if current_user == @ai.user %>
       <h3>The Code</h3>
       <pre><%= render file: @ai.location.current_path %></pre>
@@ -60,6 +60,19 @@
         <%= f.number_field :time_alloted, value: 300000 %>
         <%= f.submit "Godspeed!", class: "btn btn-primary" %>
       <% end %>
+    <% end %>
+  </div>
+  <div>
+    <br>
+    <h3> Match History </h3>
+    <% if @ai.matches.any? %>
+      <% ai_matches = @ai.matches.paginate(page: params[:page]) %>
+      <ol class="matches">
+        <%= render ai_matches %>
+      </ol>
+      <%= will_paginate ai_matches %>
+    <% else %>
+      <p>(<i><%= @ai.name %></i> has not played any matches)</p>
     <% end %>
   </div>
 </div>

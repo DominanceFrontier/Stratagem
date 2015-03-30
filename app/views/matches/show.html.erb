@@ -192,15 +192,21 @@
             <div class='panel-heading'>
               <% if x['piece'] == 'x' %>
                 <% if @match.mario.is_a? User %>
-                  <%= @match.mario.username %>
+                  <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
                 <% else %>
-                  <%= @match.mario.user.username %>'s AI <b><%= link_to @match.mario.name, @match.mario %></b>
+                  <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
+                  <b>
+                    <%= link_to @match.mario.name, @match.mario, :target => "_blank" %>
+                  </b>
                 <% end %>
               <% else %>
                 <% if @match.mario.is_a? User %>
-                  <%= @match.luigi.username %>
+                  <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
                 <% else %>
-                  <%= @match.luigi.user.username %>'s AI <b><%= link_to @match.luigi.name, @match.luigi %></b>
+                  <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
+                  <b>
+                    <%= link_to @match.luigi.name, @match.luigi, :target => "_blank" %>
+                  </b>
                 <% end %>
               <% end %>
               placed an <%= x['piece'] %> at
