@@ -5,8 +5,8 @@ class Ai < ActiveRecord::Base
   # Relationships
   #----------------------------------------------------------------------------
   belongs_to :user
-  has_many :matches, as: :mario, dependent: :destroy
-  has_many :matches, as: :luigi, dependent: :destroy
+  has_many :mario_matches, as: :mario, class_name: "Match", dependent: :destroy
+  has_many :luigi_matches, as: :luigi, class_name: "Match", dependent: :destroy
   has_one :stat, as: :player, dependent: :destroy
   #----------------------------------------------------------------------------
 
@@ -24,9 +24,15 @@ class Ai < ActiveRecord::Base
   validates :location, presence: true
   validate :script_size
   #----------------------------------------------------------------------------
-  
-  private
 
+  def matches
+    Match.where(["mario_type = :type and mario_id = :id " \
+                 "or luigi_type = :type and luigi_id = :id",
+                 { type: "Ai", id: self.id }])
+  end
+
+  private
+  
   def build_default_stat
     build_stat
     true

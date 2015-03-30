@@ -10,8 +10,8 @@ class User < ActiveRecord::Base
   # Relationships
   #----------------------------------------------------------------------------
   has_many :ais, dependent: :destroy
-  has_many :matches, as: :mario, dependent: :destroy
-  has_many :matches, as: :luigi, dependent: :destroy
+  has_many :mario_matches, as: :mario, class_name: "Match", dependent: :destroy
+  has_many :luigi_matches, as: :luigi, class_name: "Match", dependent: :destroy
   has_one :stat, as: :player, dependent: :destroy
   #----------------------------------------------------------------------------
   
@@ -60,6 +60,12 @@ class User < ActiveRecord::Base
   # Returns true if a password reset has expired.
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+
+  def matches
+    Match.where(["mario_type = :type and mario_id = :id " \
+                "or luigi_type = :type and luigi_id = :id",
+                 { type: "User", id: self.id }])
   end
 
   private
