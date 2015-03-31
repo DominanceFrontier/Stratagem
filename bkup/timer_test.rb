@@ -1,6 +1,13 @@
-cmd = "python /home/student/Desktop/Ujjwal/Stratagem/runner.py /home/student/Desktop/Ujjwal/Stratagem get_move \"[[\\\"X\\\",\\\"O\\\",\\\"X\\\"],[\\\"O\\\",\\\"O\\\",\\\"X\\\"],[\\\"X\\\",\\\" \\\",\\\"O\\\"]]\""
+runner = "/home/student/Desktop/Ujjwal/Stratagem/runner.py"
+location = "/home/student/Desktop/Ujjwal/Stratagem"
+script = "get_move"
+state = "\"[[\\\"X\\\",\\\"O\\\",\\\"X\\\"],[\\\"O\\\",\\\"O\\\",\\\"X\\\"]," \
+        "[\\\"X\\\",\\\" \\\",\\\"O\\\"]]\""
+time_left = 50
+player = 'x'
+cmd = "python #{runner} #{location} #{script} #{state} #{time_left} #{player}"
 r, w = IO.pipe
-pid = spawn(cmd, rlimit_cpu: 2, out: w)
+pid = spawn(cmd, rlimit_cpu: 1, out: w)
 start_time = Process.times
 Process.wait pid
 w.close
