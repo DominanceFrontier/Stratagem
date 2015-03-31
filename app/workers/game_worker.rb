@@ -22,6 +22,8 @@ class GameWorker
     build_duelers # Currently sets challenger as second player
     
     while @match.result == "open" do
+      p ["Turn: ", @player[:side]]
+      p ["time_left", @player[:time_left]]
       fetch_move
       return timeout if @move.empty? || @player[:time_left] < 0
       return illegal unless @@ttt.isValidMove(@match.state, @move)
@@ -72,6 +74,7 @@ class GameWorker
     end_time = Process.times
     total_time = end_time.cutime - start_time.cutime +
                  end_time.cstime - start_time.cstime
+    p ["time_taken", total_time]
     total_time = (total_time * 1000).to_i
     @player[:time_left] -= total_time
   end
