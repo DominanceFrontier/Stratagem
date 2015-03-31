@@ -22,4 +22,6 @@ test:
 
 production:
   <<: *default
+  url:  <%= ENV["DATABASE_URL"] %>
+  pool: <%= ENV['MAX_THREADS'] %>
   database: db/production.sqlite3
