@@ -1,8 +1,8 @@
-<% provide(:title, @ai.user.username + " | " + @ai.name) %>
+<% provide(:title, @ai.user.username + " | " + @ai.username) %>
 <div class="row">
   <div id="ai_info_header">
     <h2>
-      <%= @ai.name %>
+      <%= @ai.username %>
     </h2>
   </div>
   <aside class="col-md-6">
@@ -49,30 +49,40 @@
       <h3>The Code</h3>
       <pre><%= render file: @ai.location.current_path %></pre>
     <% else %>
-      <h3>Challenge <%= @ai.name %> for a game!</h3>
+      <h3>Challenge <%= @ai.username %> for a game!</h3>
       <%= form_for @match do |f| %>
         <%= render 'shared/error_messages', object: f.object %>
         <%= f.hidden_field :type, value: "Ai" %>
         <%= f.hidden_field :mario, value: @ai.id %>
         <%= f.label "Your champion:" %>
-        <%= f.collection_select(:luigi, current_user.ais, :id, :name) %>
+        <%= f.collection_select(:luigi, current_user.ais, :id, :username) %>
         <%= f.label "Time for the match (in milliseconds):" %>
         <%= f.number_field :time_alloted, value: 300000 %>
         <%= f.submit "Godspeed!", class: "btn btn-primary" %>
       <% end %>
     <% end %>
   </div>
-  <div>
-    <br>
-    <h3> Match History </h3>
-    <% if @ai.matches.any? %>
-      <% ai_matches = @ai.matches.paginate(page: params[:page]) %>
-      <ol class="matches">
+  <br>
+</div>
+<div class="row">
+  <h3> Match History </h3>
+  <% if @ai.matches.any? %>
+    <% ai_matches = @ai.matches.paginate(page: params[:page]) %>
+    <table class="matches" border="1">
+      <thead>
+        <tr>
+          <th> Match ID </th>
+          <th> Player One </th>
+          <th> Player Two </th>
+          <th> Result </th>
+        </tr>
+      </thead>
+      <tbody>
         <%= render ai_matches %>
-      </ol>
-      <%= will_paginate ai_matches %>
-    <% else %>
-      <p>(<i><%= @ai.name %></i> has not played any matches)</p>
-    <% end %>
-  </div>
+      </tbody>
+    </table>
+    <%= will_paginate ai_matches %>
+  <% else %>
+    <p>(<i><%= @ai.username %></i> has not played any matches)</p>
+  <% end %>
 </div>

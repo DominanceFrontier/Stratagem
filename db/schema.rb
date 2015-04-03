@@ -14,7 +14,7 @@
 ActiveRecord::Schema.define(version: 20150326130119) do
 
   create_table "ais", force: :cascade do |t|
-    t.string   "name"
+    t.string   "username"
     t.string   "language"
     t.string   "location"
     t.integer  "user_id"

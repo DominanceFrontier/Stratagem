@@ -39,19 +39,6 @@
           </tr>
         </tbody>
       </table>
-      <div>
-        <br>
-        <h3> Match History </h3>
-        <% if @user.matches.any? %>
-          <% user_matches = @user.matches.paginate(page: params[:page]) %>
-          <ol class="matches">
-            <%= render user_matches %>
-          </ol>
-          <%= will_paginate user_matches %>
-        <% else %>
-          <p>(<i><%= @user.username %></i> has not played any matches)</p>
-        <% end %>
-      </div>
     </section>
   </aside>
   <div class="col-md-8">
@@ -80,3 +67,26 @@
     <% end %>
   </div>
 </div>
+<div class="row">
+  <h3> Match History </h3>
+  <% if @user.matches.any? %>
+    <% user_matches = @user.matches.paginate(page: params[:page]) %>
+    <table class="matches" border="1">
+      <thead>
+        <tr>
+          <th> Match ID </th>
+          <th> Player One </th>
+          <th> Player Two </th>
+          <th> Result </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render user_matches %>
+      </tbody>
+    </table>
+    <%= will_paginate user_matches %>
+  <% else %>
+    <p>(<i><%= @user.username %></i> has not played any matches)</p>
+  <% end %>
+</div>
+

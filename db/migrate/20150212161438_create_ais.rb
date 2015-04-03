@@ -1,7 +1,7 @@
 class CreateAis < ActiveRecord::Migration
   def change
     create_table :ais do |t|
-      t.string :name
+      t.string :username
       t.string :language
       t.string :location
       t.references :user, index: true

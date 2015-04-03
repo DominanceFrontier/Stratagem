@@ -20,7 +20,7 @@ class Ai < ActiveRecord::Base
   # Validations
   #----------------------------------------------------------------------------
   validates :user_id, presence: true
-  validates :name, presence: true, length: { minimum: 5, maximum: 36 }
+  validates :username, presence: true, length: { minimum: 5, maximum: 36 }
   validates :location, presence: true
   validate :script_size
   #----------------------------------------------------------------------------

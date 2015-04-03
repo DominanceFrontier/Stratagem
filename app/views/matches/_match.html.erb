@@ -1,3 +1,6 @@
-<li>
-  <%= link_to match.id, match %> with result <%= match.result %>!
-</li>
+<tr class="match-row">
+  <td><%= link_to match.id, match %></td>
+  <td><%= link_to match.mario.username, match.mario %> </td>
+  <td><%= link_to match.luigi.username, match.luigi %> </td>
+  <td><%= match.result %> </td>
+</tr>

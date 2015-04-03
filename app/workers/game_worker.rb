@@ -31,8 +31,11 @@ class GameWorker
       publish_move
       
       game_over = @@ttt.checkForWinner(@match.state, @player[:side])      
-      return player_victory if game_over == @player[:side]
-      return tie if game_over == "T"
+      if game_over == @player[:side]
+        return player_victory 
+      elsif game_over == "T"
+        return tie
+      end
       
       @player, @opponent = @opponent, @player
     end

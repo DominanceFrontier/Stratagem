@@ -164,9 +164,9 @@
      }
    };
 
-   $(window).on('beforeunload', function(){
+   window.onbeforeunload = function(){
      ws.close();
-   });
+   };
   </script>
 <% end %>
 
@@ -196,7 +196,7 @@
                 <% else %>
                   <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
                   <b>
-                    <%= link_to @match.mario.name, @match.mario, :target => "_blank" %>
+                    <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
                   </b>
                 <% end %>
               <% else %>
@@ -205,7 +205,7 @@
                 <% else %>
                   <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
                   <b>
-                    <%= link_to @match.luigi.name, @match.luigi, :target => "_blank" %>
+                    <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
                   </b>
                 <% end %>
               <% end %>
