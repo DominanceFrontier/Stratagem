@@ -23,6 +23,7 @@ class MatchesController < ApplicationController
     @match = Match.new(mario: mario, luigi: luigi, time_alloted: time_alloted)
 
     if @match.save
+      GameWorker.perform_async @match.id
       redirect_to @match
     else
       flash[:danger] = "Sorry something went wrong."
@@ -34,7 +35,6 @@ class MatchesController < ApplicationController
   def show
     @match = Match.find(params[:id])    
     @scheme = ENV['RACK_ENV'] == "production" ? "wss://" : "ws://"
-    GameWorker.perform_async @match.id if @match.result == "open"
   end
 
   private
@@ -42,7 +42,5 @@ class MatchesController < ApplicationController
   def match_params
     params.require(:match).permit(:type, :mario, :luigi, :time_alloted)
   end
-
-  private
   
 end

@@ -145,6 +145,7 @@
      if ("welcome" in data)
        console.log(data);
      else if ("result" in data){
+       ws.close();
        if (data.result == "t")
          document.getElementById("result").appendChild(document.createTextNode("Result: It's a tie!!"));
        else
@@ -165,16 +166,17 @@
    };
 
    window.onbeforeunload = function(){
+     ws.onclose = function(){};
      ws.close();
    };
   </script>
 <% end %>
 
 <div class="row">
-  <div class="col-md-6"  id="gameArea">
+  <div class="col-md-6" id="gameArea">
     <h1 id="result">
       <% unless @match.result == "open" %>
-        <% if @match.result == "tie" %>
+        <% if @match.result == "t" %>
           Result: It's a tie!!
         <% else %>
           Result: <%= @match.result %> has won!

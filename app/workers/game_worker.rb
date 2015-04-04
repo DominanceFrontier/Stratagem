@@ -8,13 +8,11 @@
 
 class GameWorker
   include Sidekiq::Worker
-  sidekiq_options retry: false
-
-  @@cxt = V8::Context.new
-  @@cxt.load("#{Rails.root.to_s}/games/ttt/game.js")
-  @@ttt = @@cxt[:ttt]
   
   def perform(match_id)
+    @cxt = V8::Context.new
+    @cxt.load("#{Rails.root.to_s}/games/ttt/game.js")
+    @ttt = @cxt[:ttt]
     @redis = Redis.new(:url => ENV['REDISTOGO_URL'])
     @redis_channel = match_id.to_s
     @match = Match.find(match_id)
@@ -26,11 +24,11 @@ class GameWorker
       p ["time_left", @player[:time_left]]
       fetch_move
       return timeout if @move.empty? || @player[:time_left] < 0
-      return illegal unless @@ttt.isValidMove(@match.state, @move)
+      return illegal unless @ttt.isValidMove(@match.state, @move)
       make_move
       publish_move
       
-      game_over = @@ttt.checkForWinner(@match.state, @player[:side])      
+      game_over = @ttt.checkForWinner(@match.state, @player[:side])      
       if game_over == @player[:side]
         return player_victory 
       elsif game_over == "T"
@@ -90,7 +88,7 @@ class GameWorker
   end
 
   def make_move
-    @match.state = @@ttt.makeMove(@match.state, @move, @player[:side])
+    @match.state = @ttt.makeMove(@match.state, @move, @player[:side])
     move_list = JSON.parse(@match.moveHistory)
     move_list << {"piece" => @player[:side], "move" => @move}
     @match.moveHistory = JSON.generate(move_list)
