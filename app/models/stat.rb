@@ -13,11 +13,9 @@ class Stat < ActiveRecord::Base
   #----------------------------------------------------------------------------
   
   def win_percentage
-    begin
-      return (self.wins.to_f / self.player.matches.count * 100).round(2)
-    rescue ZeroDivisionError
-      return 100
-    end
+    match_count = self.player.matches.count.to_f
+    return 100 if match_count == 0
+    return (self.wins / match_count * 100).round(2)
   end
 
 end
