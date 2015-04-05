@@ -17,9 +17,13 @@ Rails.application.routes.draw do
   get 'login'   => 'sessions#new'
   post 'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'
-  get 'frankenstein' => 'ais#new'
+  get 'upload_ai' => 'ais#new'
   
-  resources :users
+  resources :users do
+    member do
+      get :ais
+    end
+  end
   resources :ais
   resources :matches
   resources :password_resets, only: [:new, :create, :edit, :update]

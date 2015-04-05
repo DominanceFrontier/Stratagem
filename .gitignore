@@ -20,5 +20,5 @@
 dump.rdb
 
 # Ignore uploaded files.
-/public/uploads/**
+/public/uploads
 

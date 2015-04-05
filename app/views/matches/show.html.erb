@@ -188,38 +188,36 @@
   <div class="col-md-6">
     <h1>Move History</h1>
     <div id="move-history">
-      <% unless @match.result == "open" %>
-        <% JSON.parse(@match.moveHistory).each do |x|%>
-          <div class='panel panel-default'>
-            <div class='panel-heading'>
-              <% if x['piece'] == 'x' %>
-                <% if @match.mario.is_a? User %>
-                  <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
-                <% else %>
-                  <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
-                  <b>
-                    <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
-                  </b>
-                <% end %>
+      <% JSON.parse(@match.moveHistory).each do |x|%>
+        <div class='panel panel-default'>
+          <div class='panel-heading'>
+            <% if x['piece'] == 'x' %>
+              <% if @match.mario.is_a? User %>
+                <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
               <% else %>
-                <% if @match.mario.is_a? User %>
-                  <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
-                <% else %>
-                  <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
-                  <b>
-                    <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
-                  </b>
-                <% end %>
+                <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
+                <strong>
+                  <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
+                </strong>
               <% end %>
-              placed an <%= x['piece'] %> at
-            </div>
-            <div class='panel-body'>
-              <%= x['move'] %>
-            </div>
+            <% else %>
+              <% if @match.mario.is_a? User %>
+                <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
+              <% else %>
+                <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
+                <strong>
+                  <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
+                </strong>
+              <% end %>
+            <% end %>
+            placed an <%= x['piece'] %> at
           </div>
+          <div class='panel-body'>
+            <%= x['move'] %>
+          </div>
+        </div>
 
-          <script> states.push(x['move']); </script> 
-        <% end %>
+        <!-- <script> states.push(x['move']); </script> -->
       <% end %>
     </div>
   </div>

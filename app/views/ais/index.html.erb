@@ -1,0 +1,26 @@
+<% provide(:title, 'Droids') %>
+<h1>Droids</h1>
+
+<%= will_paginate %>
+
+<table class="ais" border="1">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Owned By</th>
+      <th>Created at</th>
+      <th>Wins</th>
+      <th>Losses</th>
+      <th>Ties</th>
+      <th>Illegal Moves</th>
+      <th>Time Outs</th>
+      <th>Win Percentage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render @ais %>
+  </tbody>
+</table>
+
+
+<%= will_paginate %>
