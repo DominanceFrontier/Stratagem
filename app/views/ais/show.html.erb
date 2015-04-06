@@ -67,7 +67,7 @@
 <div class="row">
   <h3> Match History </h3>
   <% if @ai.matches.any? %>
-    <% ai_matches = @ai.matches.paginate(page: params[:page]) %>
+    <% ai_matches = @ai.matches.paginate(page: params[:page]).order('id DESC') %>
     <table class="matches" border="1">
       <thead>
         <tr>

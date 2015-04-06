@@ -70,7 +70,7 @@
 <div class="row">
   <h3> Match History </h3>
   <% if @user.matches.any? %>
-    <% user_matches = @user.matches.paginate(page: params[:page]) %>
+    <% user_matches = @user.matches.paginate(page: params[:page]).order('id DESC') %>
     <table class="matches" border="1">
       <thead>
         <tr>

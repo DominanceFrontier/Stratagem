@@ -1,14 +1,45 @@
 <% provide(:title, 'Matches') %>
-<h1>Matches</h1>
+<h1 class="center">Matches</h1>
 
-<%= will_paginate %>
+<div class="row">
+<div class="col-md-6 col-md-offset-3">
+<h3 class="center">Ongoing Matches</h3>
+<%= will_paginate @live_matches %>
+<table class="matches" border="1">
+  <thead>
+    <tr>
+      <th> Match ID </th>
+      <th> Player One </th>
+      <th> Player Two </th>
+      <th> Result </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render @live_matches %>
+  </tbody>
+</table>
+<%= will_paginate @live_matches %>
+</div>
+</div>
 
-<ul class="matches">
-  <% @matches.each do |match| %>
-    <% unless match.result == "open" %>
-      <%= render match %>
-    <% end %>
-  <% end %>
-</ul>
 
-<%= will_paginate %>
+<div class="row">
+<div class="col-md-6 col-md-offset-3">
+<h3 class="center">Finished Matches</h3>
+<%= will_paginate @done_matches %>
+<table class="matches" border="1">
+  <thead>
+    <tr>
+      <th> Match ID </th>
+      <th> Player One </th>
+      <th> Player Two </th>
+      <th> Result </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render @done_matches %>
+  </tbody>
+</table>
+<%= will_paginate @done_matches %>
+</div>
+</div>

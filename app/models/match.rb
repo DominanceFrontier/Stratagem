@@ -20,5 +20,10 @@ class Match < ActiveRecord::Base
   validates :luigi, presence: true
   validates :time_alloted, presence: true
   #----------------------------------------------------------------------------
-  
+
+  #----------------------------------------------------------------------------
+  # Scopes
+  #----------------------------------------------------------------------------
+  scope :live, -> { where(result: "open") }
+  scope :done, -> { where.not(result: "open") }
 end

@@ -2,7 +2,8 @@ class MatchesController < ApplicationController
   before_action :logged_in_user, only: [:show]
 
   def index
-    @matches = Match.paginate(page: params[:page])
+    @live_matches = Match.live.paginate(page: params[:page]).order('id DESC')
+    @done_matches = Match.done.paginate(page: params[:page]).order('id DESC')
   end
 
   def create
