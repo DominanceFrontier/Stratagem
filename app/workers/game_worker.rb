@@ -10,14 +10,13 @@ class GameWorker
   include Sidekiq::Worker
   
   def perform(match_id)
-    @cxt = V8::Context.new
-    @cxt.load("#{Rails.root.to_s}/games/ttt/game.js")
-    @ttt = @cxt[:ttt]
-    @redis = Redis.new(:url => ENV['REDISTOGO_URL'])
-    @redis_channel = match_id.to_s
     @match = Match.find(match_id)
-    
+
+    load_js_context
+    build_communication_channel    
     build_duelers # Currently sets challenger as second player
+
+    @player, @opponent = @opponent, @player if @match.turn
     
     while @match.result == "open" do
       p ["Turn: ", @player[:side]]
@@ -40,6 +39,18 @@ class GameWorker
   end
 
   private
+
+  # Load a JavaScript context
+  def load_js_context
+    @cxt = V8::Context.new
+    @cxt.load("#{Rails.root.to_s}/games/ttt/game.js")
+    @ttt = @cxt[:ttt]
+  end
+
+  def build_communication_channel
+    @redis = Redis.new(:url => ENV['REDISTOGO_URL'])
+    @redis_channel = @match.id.to_s
+  end
 
   # Takes a player object and builds a map of required data
   def build_player(player)
@@ -92,6 +103,7 @@ class GameWorker
     move_list = JSON.parse(@match.moveHistory)
     move_list << {"piece" => @player[:side], "move" => @move}
     @match.moveHistory = JSON.generate(move_list)
+    @match.toggle :turn
     @match.save
   end
 

@@ -8,6 +8,7 @@ class MatchesController < ApplicationController
 
   def create
     paras = match_params
+    game = Game.find(paras[:game])
     
     if paras[:type] == "Ai"
       mario = Ai.find(paras[:mario])
@@ -20,8 +21,8 @@ class MatchesController < ApplicationController
       luigi = User.find(paras[:luigi])
     end
 
-    time_alloted = paras[:time_alloted]
-    @match = Match.new(mario: mario, luigi: luigi, time_alloted: time_alloted)
+    @match = Match.new(game: game, mario: mario, luigi: luigi,
+                       time_alloted: paras[:time_alloted])
 
     if @match.save
       GameWorker.perform_async @match.id
@@ -41,7 +42,7 @@ class MatchesController < ApplicationController
   private
 
   def match_params
-    params.require(:match).permit(:type, :mario, :luigi, :time_alloted)
+    params.require(:match).permit(:type, :game, :mario, :luigi, :time_alloted)
   end
   
 end

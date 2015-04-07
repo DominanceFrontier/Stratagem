@@ -18,16 +18,20 @@ ActiveRecord::Schema.define(version: 20150326130119) do
     t.string   "language"
     t.string   "location"
     t.integer  "user_id"
+    t.integer  "game_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  add_index "ais", ["game_id"], name: "index_ais_on_game_id"
   add_index "ais", ["user_id", "created_at"], name: "index_ais_on_user_id_and_created_at"
   add_index "ais", ["user_id"], name: "index_ais_on_user_id"
 
   create_table "games", force: :cascade do |t|
     t.string   "name"
     t.string   "path"
+    t.string   "p1_symbol"
+    t.string   "p2_symbol"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -39,6 +43,7 @@ ActiveRecord::Schema.define(version: 20150326130119) do
     t.integer  "luigi_id"
     t.string   "luigi_type"
     t.string   "result",       default: "open"
+    t.boolean  "turn",         default: false
     t.integer  "time_alloted"
     t.text     "state",        default: "[[\" \",\" \",\" \"],[\" \",\" \",\" \"],[\" \",\" \",\" \"]]"
     t.text     "moveHistory",  default: "[]"

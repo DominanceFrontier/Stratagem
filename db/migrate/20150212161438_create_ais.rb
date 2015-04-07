@@ -5,6 +5,7 @@ class CreateAis < ActiveRecord::Migration
       t.string :language
       t.string :location
       t.references :user, index: true
+      t.references :game, index:true
       
       t.timestamps null: false
     end

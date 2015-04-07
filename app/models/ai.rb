@@ -5,6 +5,7 @@ class Ai < ActiveRecord::Base
   # Relationships
   #----------------------------------------------------------------------------
   belongs_to :user
+  belongs_to :game
   has_many :mario_matches, as: :mario, class_name: "Match", dependent: :destroy
   has_many :luigi_matches, as: :luigi, class_name: "Match", dependent: :destroy
   has_one :stat, as: :player, dependent: :destroy

@@ -1,77 +1,82 @@
 <% provide(:title, @ai.user.username + " | " + @ai.username) %>
 <div class="row">
   <div id="ai_info_header">
-    <h2>
+    <h2 class="center">
       <%= @ai.username %>
     </h2>
   </div>
-  <aside class="col-md-6">
-    <section class="ai_info">
-      <h3> Stats </h3> 
-      <table class="ais" border="1">
-        <thead>
-          <tr>
-            <th>Wins</th>
-            <th>Losses</th>
-            <th>Ties</th>
-            <th>Illegal Moves</th>
-            <th>Time Outs</th>
-            <th>Win Percentage</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="wins">
-              <%= @ai.stat.wins %>
-            </td>
-            <td class="losses">
-              <%= @ai.stat.losses %>
-            </td>
-            <td class="ties">
-              <%= @ai.stat.ties %>
-            </td>
-            <td class="illegals">
-              <%= @ai.stat.illegals %>
-            </td>
-            <td class="timeouts">
-              <%= @ai.stat.timeouts %>
-            </td>
-            <td class="win_percentage">
-              <%= @ai.stat.win_percentage %> 
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-  </aside>
-  <div class="col-md-6 ai_side_info">
-    <% if current_user == @ai.user %>
-      <h3>The Code</h3>
-      <pre><%= render file: @ai.location.current_path %></pre>
-    <% else %>
-      <h3>Challenge <%= @ai.username %> for a game!</h3>
-      <%= form_for @match do |f| %>
-        <%= render 'shared/error_messages', object: f.object %>
-        <%= f.hidden_field :type, value: "Ai" %>
-        <%= f.hidden_field :mario, value: @ai.id %>
-        <%= f.label "Your champion:" %>
-        <%= f.collection_select(:luigi, current_user.ais, :id, :username) %>
-        <%= f.label "Time for the match (in milliseconds):" %>
-        <%= f.number_field :time_alloted, value: 300000 %>
-        <%= f.submit "Godspeed!", class: "btn btn-primary" %>
-      <% end %>
-    <% end %>
-  </div>
-  <br>
 </div>
+<br>
+<br>
 <div class="row">
-  <h3> Match History </h3>
+  <aside class="ai_info col-md-6">
+    <h3 class="center"> Stats </h3> 
+    <table class="ais" border="1">
+      <thead>
+        <tr>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Ties</th>
+          <th>Illegal Moves</th>
+          <th>Time Outs</th>
+          <th>Win Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="wins">
+            <%= @ai.stat.wins %>
+          </td>
+          <td class="losses">
+            <%= @ai.stat.losses %>
+          </td>
+          <td class="ties">
+            <%= @ai.stat.ties %>
+          </td>
+          <td class="illegals">
+            <%= @ai.stat.illegals %>
+          </td>
+          <td class="timeouts">
+            <%= @ai.stat.timeouts %>
+          </td>
+          <td class="win_percentage">
+            <%= @ai.stat.win_percentage %> 
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </aside>
+  <div class="col-md-6">
+  <% if current_user == @ai.user %>
+    <h3 class="center"> The Code </h3>
+    <pre><%= render file: @ai.location.current_path %></pre>
+  <% else %>
+    <h3 class="center"> Challenge <%= @ai.username %> for a game! </h3>
+    <%= form_for @match do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+      <%= f.hidden_field :type, value: "Ai" %>
+      <%= f.hidden_field :game, value: @ai.game.id %>
+      <%= f.hidden_field :mario, value: @ai.id %>
+      <%= f.label "Your champion:" %>
+      <%= f.collection_select(:luigi, current_user.ais, :id, :username) %>
+      <%= f.label "Time for the match (in milliseconds):" %>
+      <%= f.number_field :time_alloted, value: 300000 %>
+      <%= f.submit "Godspeed!", class: "btn btn-primary" %>
+    <% end %>
+  <% end %>
+  </div>
+</div>
+<br>
+<br>
+<div class="row">
+  <h3 class="center"> Match History </h3>
   <% if @ai.matches.any? %>
     <% ai_matches = @ai.matches.paginate(page: params[:page]).order('id DESC') %>
     <table class="matches" border="1">
       <thead>
         <tr>
           <th> Match ID </th>
+          <th> Game </th>
           <th> Player One </th>
           <th> Player Two </th>
           <th> Result </th>
@@ -83,6 +88,6 @@
     </table>
     <%= will_paginate ai_matches %>
   <% else %>
-    <p>(<i><%= @ai.username %></i> has not played any matches)</p>
+    <p>(<em><%= @ai.username %></em> has not played any matches)</p>
   <% end %>
 </div>

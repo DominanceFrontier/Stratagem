@@ -6,6 +6,9 @@
     <%= link_to ai.user.username, ai.user %>
   </td>
   <td>
+    <%= ai.game.name %>
+  </td>
+  <td>
     <%= time_ago_in_words(ai.created_at) %> ago.
   </td>
   <td class="stats wins">

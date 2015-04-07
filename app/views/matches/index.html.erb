@@ -1,6 +1,6 @@
 <% provide(:title, 'Matches') %>
 <h1 class="center">Matches</h1>
-
+<br>
 <div class="row">
 <div class="col-md-6 col-md-offset-3">
 <h3 class="center">Ongoing Matches</h3>
@@ -9,6 +9,7 @@
   <thead>
     <tr>
       <th> Match ID </th>
+      <th> Game </th>
       <th> Player One </th>
       <th> Player Two </th>
       <th> Result </th>
@@ -21,8 +22,8 @@
 <%= will_paginate @live_matches %>
 </div>
 </div>
-
-
+<br>
+<br>
 <div class="row">
 <div class="col-md-6 col-md-offset-3">
 <h3 class="center">Finished Matches</h3>
@@ -31,6 +32,7 @@
   <thead>
     <tr>
       <th> Match ID </th>
+      <th> Game </th>
       <th> Player One </th>
       <th> Player Two </th>
       <th> Result </th>

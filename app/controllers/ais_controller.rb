@@ -31,7 +31,7 @@ class AisController < ApplicationController
   private
 
   def ai_params
-      params.require(:ai).permit(:username, :language, :location)
+      params.require(:ai).permit(:username, :game_id, :language, :location)
   end
   
 end
