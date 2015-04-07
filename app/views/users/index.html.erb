@@ -1,10 +1,24 @@
 <% provide(:title, 'Strategists') %>
-<h1>Strategists</h1>
+<h1 class="center">Strategists</h1>
 
 <%= will_paginate %>
 
-<ul class="users">
-  <%= render @users %>
-</ul>
+<table class="users" border="1">
+  <thead>
+    <tr>
+      <th> Username </th>
+      <th> AIs uploaded</th>
+      <th> Matches Played </th>
+      <th> Wins </th>
+      <th> Losses </th>
+      <th> Ties </th>
+      <th> Time Outs </th>
+      <th> Win Percentage </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render @users %>
+  </tbody>
+</table>
 
 <%= will_paginate %>

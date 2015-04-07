@@ -4,7 +4,7 @@
 
 #user_info_header { width: 100%; }
 
-table.ais, table.userstats, table.matches
+table.users, table.ais, table.userstats, table.matches
 { 
   width: 100%; 
   // -webkit-box-shadow: -1px 2px 5px 0px rgba(0,0,0,0.75);
@@ -12,9 +12,7 @@ table.ais, table.userstats, table.matches
   // box-shadow: -1px 2px 5px 0px rgba(0,0,0,0.75);
 }
 
-table.userstats { width: 100%; }
-
-table.ais tbody tr, table.matches tbody tr, table.userstats tbody tr 
+table.users tbody tr, table.ais tbody tr, table.matches tbody tr, table.userstats tbody tr 
 {
   &:hover 
   {
@@ -22,12 +20,12 @@ table.ais tbody tr, table.matches tbody tr, table.userstats tbody tr
   }
 }
 
-table.ais th, table.ais td, table.matches th, table.matches td, table.userstats th, table.userstats td
+table.users th, table.users td, table.ais th, table.ais td, table.matches th, table.matches td, table.userstats th, table.userstats td
 {
   padding: 5px;
 }
 
-table.ais th, table.matches th, table.userstats th
+table.users th, table.ais th, table.matches th, table.userstats th
 {
   background-color: #aabbbc; 
 }

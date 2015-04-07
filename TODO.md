@@ -1,6 +1,11 @@
 # TODO
 List of things needing getting around to. Grouped by priority, sorted by ease.
 
+Ongoing Tasks
+-------------
+* Clean up the visual design.
+* Add framework for supporting multiple games.
+
 Recently Finished Tasks
 -----------------------
 * Remove channels once the match is done. Don't need to communicate over websocket.
@@ -52,4 +57,4 @@ Low Priority
 4. Let users sort matches, users, ais etc. based on different stas.
 5. Logo, landing page, other design stuff.
 6. Friends yada yada.
-7. Performance optimizations, use nested resources where applicable etc.
+7. Performance optimizations, use nested resources, partials where applicable etc.
