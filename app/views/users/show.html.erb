@@ -12,6 +12,7 @@
       <table class="userstats" border="1">
         <thead>
           <tr>
+            <th>Matches Played</th>
             <th>Wins</th>
             <th>Losses</th>
             <th>Ties</th>
@@ -21,6 +22,9 @@
         </thead>
         <tbody>
           <tr>
+            <td class="matchcount">
+              <%= @user.matches.count %>
+            </td>
             <td class="wins">
               <%= @user.stat.wins %>
             </td>
@@ -52,6 +56,7 @@
             <th>Owned By</th>
             <th>Game</th>
             <th>Created at</th>
+            <th>Matches Played</th>
             <th>Wins</th>
             <th>Losses</th>
             <th>Ties</th>

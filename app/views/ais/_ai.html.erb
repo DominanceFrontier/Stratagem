@@ -11,6 +11,9 @@
   <td>
     <%= time_ago_in_words(ai.created_at) %> ago.
   </td>
+  <td class="stats matchcount">
+    <%= ai.matches.count %>
+  </td>
   <td class="stats wins">
     <%= ai.stat.wins %>
   </td>

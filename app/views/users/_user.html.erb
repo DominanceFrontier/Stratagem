@@ -1,3 +1,26 @@
-<li>
-  <%= link_to user.username, user %> with <%= pluralize(user.ais.count, "bot") %>
-</li>
+<tr id="user-<%= user.id %>">
+  <td>
+    <%= link_to user.username, user %>
+  </td>
+  <td>
+    <%= link_to pluralize(user.ais.count, "Droid"), ais_user_path(user) %>
+  </td>
+  <td class="stats matchcount">
+    <%= user.matches.count %>
+  </td>
+  <td class="stats wins">
+    <%= user.stat.wins %>
+  </td>
+  <td class="stats losses">
+    <%= user.stat.losses %> 
+  </td>
+  <td class="stats ties">
+    <%= user.stat.ties %>
+  </td>
+  <td class="stats timeouts">
+    <%= user.stat.timeouts %>
+  </td>
+  <td class="stats win_percentage">
+    <%= user.stat.win_percentage %>
+  </td>
+</tr>

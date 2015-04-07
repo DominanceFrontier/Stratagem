@@ -1,5 +1,5 @@
-<% provide(:title, @user.username + " | Drones") %>
-<h1 class="center"><%= @user.username %>'s Drones</h1>
+<% provide(:title, @user.username + " | Droids") %>
+<h1 class="center"><%= @user.username %>'s Droids</h1>
 
 <div class="row">
   <% user_ais = @user.ais.paginate(page: params[:page]) %>
@@ -10,6 +10,7 @@
         <th>Owned By</th>
         <th>Game</th>
         <th>Created at</th>
+        <th>Matches Played</th>
         <th>Wins</th>
         <th>Losses</th>
         <th>Ties</th>
