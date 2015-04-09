@@ -43,7 +43,6 @@ ActiveRecord::Schema.define(version: 20150326130119) do
     t.integer  "luigi_id"
     t.string   "luigi_type"
     t.string   "result",       default: "open"
-    t.boolean  "turn",         default: false
     t.integer  "time_alloted"
     t.text     "state",        default: "[[\" \",\" \",\" \"],[\" \",\" \",\" \"],[\" \",\" \",\" \"]]"
     t.text     "moveHistory",  default: "[]"

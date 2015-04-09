@@ -22,7 +22,7 @@ Recently Finished Tasks
     - Consider using a pool of contexts for better performance. When time permits.
 * Add actual functionality to upload_ai on the navbar.
 * Add a user-specific ais page to list ais owned by a particular user.
-
+* Update worker logic to restore match state when the match is not new.
 
 Top Priority
 ------------

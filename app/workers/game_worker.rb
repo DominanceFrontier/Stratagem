@@ -16,10 +16,10 @@ class GameWorker
     build_communication_channel    
     build_duelers # Currently sets challenger as second player
 
-    @player, @opponent = @opponent, @player if @match.turn
+    restore_match_state # if resuming a match for whatever reason
     
     while @match.result == "open" do
-      p ["Turn: ", @player[:side]]
+      p ["Turn: ", @player[:symbol]]
       p ["time_left", @player[:time_left]]
       fetch_move
       return timeout if @move.empty? || @player[:time_left] < 0
@@ -27,8 +27,8 @@ class GameWorker
       make_move
       publish_move
       
-      game_over = @ttt.checkForWinner(@match.state, @player[:side])      
-      if game_over == @player[:side]
+      game_over = @ttt.checkForWinner(@match.state, @player[:symbol])      
+      if game_over == @player[:symbol]
         return player_victory 
       elsif game_over == "T"
         return tie
@@ -66,16 +66,32 @@ class GameWorker
   # Simply sets the initial players for the game
   def build_duelers
     @player = build_player(@match.mario)
-    @player[:side] = 'x'
+    @player[:symbol] = @match.game.p1_symbol
     @opponent = build_player(@match.luigi)
-    @opponent[:side] = 'o'
+    @opponent[:symbol] = @match.game.p2_symbol
   end
 
+  # Restore existing state if match is being resumed and not fresh
+  def restore_match_state
+    move_history = JSON.parse(@match.moveHistory)
+    return if move_history.empty?
+    last_move = move_history[-1]
+    last_player = last_move["piece"]
+    if last_player = @opponent[:symbol]
+      @opponent[:time_left] = last_move["time_left"]
+      @player[:time_left] = move_history[-2]["time_left"]
+    else
+      @player[:time_left] = last_move["time_left"]
+      @opponent[:time_left] = move_history[-2]["time_left"]
+      @player, @opponent = @opponent, @player
+    end
+  end
+  
   # Get the move from the relevant script and time it
   def fetch_move
     cmd = "python #{Rails.root.to_s}/runner.py #{@player[:location]} " \
           "#{@player[:script]} #{@match.state.inspect} " \
-          "#{@player[:time_left]} #{@player[:side]}"
+          "#{@player[:time_left]} #{@player[:symbol]}"
     r, w = IO.pipe
     pid = spawn(cmd, rlimit_cpu: @player[:time_left] / 1000, out: w)
     start_time = Process.times
@@ -99,16 +115,16 @@ class GameWorker
   end
 
   def make_move
-    @match.state = @ttt.makeMove(@match.state, @move, @player[:side])
+    @match.state = @ttt.makeMove(@match.state, @move, @player[:symbol])
     move_list = JSON.parse(@match.moveHistory)
-    move_list << {"piece" => @player[:side], "move" => @move}
+    move_list << {"piece" => @player[:symbol],
+                  "time_left" => @player[:time_left], "move" => @move}
     @match.moveHistory = JSON.generate(move_list)
-    @match.toggle :turn
     @match.save
   end
 
   def publish_move
-    game_status = {"piece" => @player[:side], "move" => @move,
+    game_status = {"piece" => @player[:symbol], "move" => @move,
                    "state" => @match.state}
     @redis.publish(@redis_channel, JSON.generate(game_status))
   end
@@ -118,7 +134,7 @@ class GameWorker
   end
 
   def player_victory
-    @match.result = @player[:side]
+    @match.result = @player[:symbol]
     @player[:player].stat.wins += 1
     @opponent[:player].stat.losses +=1
     save
@@ -126,7 +142,7 @@ class GameWorker
   end
 
   def opponent_victory
-    @match.result = @opponent[:side]
+    @match.result = @opponent[:symbol]
     @player[:player].stat.losses += 1
     @opponent[:player].stat.wins +=1
     save
