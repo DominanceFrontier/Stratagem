@@ -885,7 +885,7 @@ Match.prototype.load = function(state)
 // the piece and a tile on the board
 Match.prototype.init = function()
 {
-    
+    this.load(this.simple_init_state);
 };
 
 // ============================================================================
