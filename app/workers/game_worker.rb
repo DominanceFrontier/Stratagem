@@ -23,14 +23,14 @@ class GameWorker
       p ["time_left", @player[:time_left]]
       fetch_move
       return timeout if @move.empty? || @player[:time_left] < 0
-      return illegal unless @ttt.isValidMove(@match.state, @move)
+      return illegal unless @game.isValidMove(@match.state, @move)
       make_move
       publish_move
       
-      game_over = @ttt.checkForWinner(@match.state, @player[:symbol])      
+      game_over = @game.checkForWinner(@match.state, @player[:symbol])      
       if game_over == @player[:symbol]
         return player_victory 
-      elsif game_over == "T"
+      elsif game_over == "t"
         return tie
       end
       
@@ -43,10 +43,11 @@ class GameWorker
   # Load a JavaScript context
   def load_js_context
     @cxt = V8::Context.new
-    @cxt.load("#{Rails.root.to_s}/games/ttt/game.js")
-    @ttt = @cxt[:ttt]
+    @cxt.load(@match.game.path)
+    @game = @cxt[:game]
   end
 
+  # Connect to redis on the appropriate channel
   def build_communication_channel
     @redis = Redis.new(:url => ENV['REDISTOGO_URL'])
     @redis_channel = @match.id.to_s
@@ -115,7 +116,7 @@ class GameWorker
   end
 
   def make_move
-    @match.state = @ttt.makeMove(@match.state, @move, @player[:symbol])
+    @match.state = @game.makeMove(@match.state, @move, @player[:symbol])
     move_list = JSON.parse(@match.moveHistory)
     move_list << {"piece" => @player[:symbol],
                   "time_left" => @player[:time_left], "move" => @move}
