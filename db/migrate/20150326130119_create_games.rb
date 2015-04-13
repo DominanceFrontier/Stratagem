@@ -5,6 +5,7 @@ class CreateGames < ActiveRecord::Migration
       t.string :path
       t.string :p1_symbol
       t.string :p2_symbol
+      t.string :initial_state
       
       t.timestamps null: false
     end

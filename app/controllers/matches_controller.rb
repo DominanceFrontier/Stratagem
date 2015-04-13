@@ -22,7 +22,8 @@ class MatchesController < ApplicationController
     end
 
     @match = Match.new(game: game, mario: mario, luigi: luigi,
-                       time_alloted: paras[:time_alloted])
+                       time_alloted: paras[:time_alloted],
+                       state: game.initial_state)
 
     if @match.save
       GameWorker.perform_async @match.id
