@@ -9,5 +9,5 @@ Game.create(name: 'Tic-Tac-Toe', path: "#{Rails.root.to_s}/games/ttt/game.js",
             p1_symbol: 'x', p2_symbol: 'o',
             initial_state: "[[\" \",\" \",\" \"],[\" \",\" \",\" \"],[\" \",\" \",\" \"]]")
 Game.create(name: 'Checkers', path: "#{Rails.root.to_s}/games/checkers/game.js",
-            p1_symbol: 'r', p2_symbol: 'b',
+            p1_symbol: 'b', p2_symbol: 'r',
             initial_state: '[[" ","b"," ","b"," ","b"," ","b"],["b"," ","b"," ","b"," ","b"," "],[" ","b"," ","b"," ","b"," ","b"],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],["r"," ","r"," ","r"," ","r"," "],[" ","r"," ","r"," ","r"," ","r"],["r"," ","r"," ","r"," ","r"," "]]')
