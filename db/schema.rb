@@ -32,8 +32,9 @@ ActiveRecord::Schema.define(version: 20150326130119) do
     t.string   "path"
     t.string   "p1_symbol"
     t.string   "p2_symbol"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "initial_state"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "matches", force: :cascade do |t|
@@ -44,10 +45,10 @@ ActiveRecord::Schema.define(version: 20150326130119) do
     t.string   "luigi_type"
     t.string   "result",       default: "open"
     t.integer  "time_alloted"
-    t.text     "state",        default: "[[\" \",\" \",\" \"],[\" \",\" \",\" \"],[\" \",\" \",\" \"]]"
+    t.text     "state"
     t.text     "moveHistory",  default: "[]"
-    t.datetime "created_at",                                                                             null: false
-    t.datetime "updated_at",                                                                             null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
 
   add_index "matches", ["game_id"], name: "index_matches_on_game_id"

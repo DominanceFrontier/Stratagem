@@ -1,0 +1,24 @@
+<% provide(:title, "New #{@game.name} Match") %>
+
+<h1 class="center">New <%= @game.name %> Match </h1>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@match) do |f| %>
+    <%= render 'shared/error_messages', object: f.object %>
+
+    <%= f.hidden_field :game, value: params[:game] %>
+    <%= f.hidden_field :type, value: params[:type] %>
+    
+    <%= f.label "Player 1" %>
+    <%= f.collection_select(:mario, @marios, :id, :username) %>
+
+    <%= f.label "Player 2" %>
+    <%= f.collection_select(:luigi, @luigis, :id, :username) %>
+
+    <%= f.label "Time for the match (in milliseconds):" %>
+    <%= f.number_field :time_alloted, value: 300000 %>
+    
+    <%= f.submit "Start Match!", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>

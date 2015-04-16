@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   post 'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'
   get 'upload_ai' => 'ais#new'
+  get 'new_match' => 'matches#new_match'
   
   resources :users do
     member do

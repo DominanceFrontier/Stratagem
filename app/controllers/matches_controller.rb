@@ -6,6 +6,25 @@ class MatchesController < ApplicationController
     @done_matches = Match.done.paginate(page: params[:page]).order('id DESC')
   end
 
+  def new
+    type = params[:type]
+    if type == "Ai"
+      @marios = Ai.where(game: params[:game])
+      @luigis = Ai.where(game: params[:game])
+    elsif type == "Human"
+      @marios = User.all
+      @luigis = User.all
+    elsif type == "H_Ai"
+      @marios = User.all
+      @luigis = Ai.where(game: params[:game])
+    else
+      @marios = Ai.where(game: params[:game])
+      @luigis = User.all
+    end
+    @game = Game.find(params[:game])  
+    @match = Match.new
+  end
+  
   def create
     paras = match_params
     game = Game.find(paras[:game])
@@ -16,7 +35,10 @@ class MatchesController < ApplicationController
     elsif paras[:type] == "Human"
       mario = User.find(paras[:mario])
       luigi = User.find(paras[:luigi])
-    elsif paras[:type] == "Mixed"
+    elsif paras[:type] == "H_A"
+      mario = User.find(paras[:mario])
+      luigi = Ai.find(paras[:luigi])
+    else
       mario = Ai.find(paras[:mario])
       luigi = User.find(paras[:luigi])
     end
@@ -31,8 +53,10 @@ class MatchesController < ApplicationController
     else
       flash[:danger] = "Sorry something went wrong."
       redirect_to contact_path
-    end
-    
+    end    
+  end
+
+  def new_match
   end
 
   def show
