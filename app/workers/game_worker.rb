@@ -22,6 +22,7 @@ class GameWorker
       p ["Turn: ", @player[:symbol]]
       p ["time_left", @player[:time_left]]
       fetch_move
+      p ["Move: ", @move]
       return timeout if @move.empty? || @player[:time_left] < 0
       return illegal unless @game.isValidMove(@match.state, @move)
       make_move

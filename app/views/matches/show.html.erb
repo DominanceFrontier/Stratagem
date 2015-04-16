@@ -1,133 +1,330 @@
+<% if @match.game.name == "Tic-Tac-Toe" %>
+  <script>
+   var states = [];
+
+   function GameView(width, height){
+       this.canvas = document.createElement("canvas");
+       this.canvas.width = width;
+       this.canvas.height = height;
+       this.context = this.canvas.getContext("2d");
+       this.elements = [];
+   }
+
+   GameView.prototype.display = function(){
+       for (var i = 0; i < this.elements.length; ++i){
+           this.elements[i].draw(this.context);
+       }
+   }
+
+   GameView.prototype.registerElement = function(element){
+       this.elements.push(element);
+   }
+
+   GameView.prototype.removeElement = function(element){
+       index = this.elements.indexOf(element);
+       if (index > -1)
+           this.elements.slice(index, 1);
+   }
+
+   function BoardView(state){
+       this.state = state;
+   }
+
+   BoardView.prototype.update = function(state){
+
+       this.state = state;
+   }
+
+   BoardView.prototype.draw = function(context){
+   }
+   
+   var tttState = <%= @match.state.html_safe %>;
+
+   tttView = new GameView(500, 500);
+   tttBoardView = new BoardView(tttState);
+
+   tttBoardView.draw = function(context){
+       width = context.canvas.clientWidth;
+       height = context.canvas.clientHeight;
+       context.beginPath();
+       context.strokeStyle = '#000'; 
+       context.lineWidth   = 4;
+
+       context.moveTo((width / 3), 0);
+       context.lineTo((width / 3), height);
+
+       context.moveTo((width / 3) * 2, 0);
+       context.lineTo((width / 3) * 2, height);
+
+       context.moveTo(0, (height / 3));
+       context.lineTo(width, (height / 3));
+
+       context.moveTo(0, (height / 3) * 2);
+       context.lineTo(width, (height / 3) * 2);
+
+       context.stroke();
+       context.closePath();
+
+       for (var r = 0; r < 3; ++r){
+           for (var c = 0; c < 3; ++c){
+               if (this.state[r][c] == 'x')
+                   drawX(context, r, c);
+               else if (this.state[r][c] == 'o')
+                   drawO(context, r, c);
+           }
+       }
+       
+       function drawX(context, x, y){
+           context.beginPath();
+
+           context.strokeStyle = '#ff0000'; 
+           context.lineWidth   = 4;
+
+           var offsetX = (width / 3) * 0.1;
+           var offsetY = (height / 3) * 0.1;
+
+           var beginX = x * (width / 3) + offsetX;
+           var beginY = y * (height / 3) + offsetY;
+
+           var endX = (x + 1) * (width / 3) - offsetX * 2;
+           var endY = (y + 1) * (height / 3) - offsetY * 2;
+
+           context.moveTo(beginX, beginY);
+           context.lineTo(endX, endY); 
+
+           context.moveTo(beginX, endY);
+           context.lineTo(endX, beginY); 	
+
+           context.stroke();
+           context.closePath();
+       }
+       
+       function drawO(context, x, y){
+           context.beginPath();
+
+           context.strokeStyle = '#0000ff'; 
+           context.lineWidth   = 4;
+
+           var offsetX = (width / 3) * 0.1;
+           var offsetY = (height / 3) * 0.1;
+
+           var beginX = x * (width / 3) + offsetX;
+           var beginY = y * (height / 3) + offsetY;
+
+           var endX = (x + 1) * (width / 3) - offsetX * 2;
+           var endY = (y + 1) * (height / 3) - offsetY * 2;
+
+           context.arc(beginX + ((endX - beginX) / 2),
+                       beginY + ((endY - beginY) / 2), 
+                       (endX - beginX) / 2 , 
+                       0, Math.PI * 2, true);
+
+           context.stroke();
+           context.closePath();
+       }
+   }
+
+   tttView.registerElement(tttBoardView);
+   view = tttView;
+   view.update = function(state){
+       for (var i = 0; i < this.elements.length; ++i)
+           this.elements[i].update(state);
+   };
+  </script>
+<% else %>
+  <script>
+   var CANVAS_WIDTH = 640;
+   var CANVAS_HEIGHT = 700;
+   var BOARD_ROWS = 8;
+   var BOARD_COLS = 8;
+   var TILE_WIDTH = 80;
+   var TILE_HEIGHT = 80;
+   var FPS = 30;
+
+   function draw_rectangle(context, location, w, h, color)
+   {
+       context.beginPath();
+       context.rect(location.x, location.y, w, h);
+       context.fillStyle = color;
+       context.fill();
+   }
+
+   function draw_filled_circle(context, center, r, color, stroke_w, stroke_c)
+   {
+       context.beginPath();
+       context.arc(center.x, center.y, r, 2 * Math.PI, false);
+       context.fillStyle = color;
+       context.fill();
+       context.strokeStyle = stroke_c;
+       context.lineWidth = stroke_w;
+       context.stroke();
+   }
+
+
+   var Rect = function(x, y, w, h)
+   {
+       this.x = x;
+       this.y = y;
+       this.w = w;
+       this.h = h;
+   };
+
+   Rect.prototype.right = function()
+   {
+       return this.x + this.w; 
+   };
+
+   Rect.prototype.bottom = function()
+   {
+       return this.y + this.h;
+   };
+
+   Rect.prototype.collide_point = function(x, y)
+   {
+       return ((x >= this.x && x <= this.right()) &&
+           (y >= this.y && y <= this.bottom()));
+   };
+
+   var CheckersView = function(x, y, w, h)
+   {
+       // The bounding rectangle for the view
+       this.rect = new Rect(x, y, w, h);
+
+       // The DOM element for te canvas
+       this.canvas = document.createElement("canvas");
+       this.canvas.width = w;
+       this.canvas.height = h;
+
+       // The canvas' context (i.e. the thing that draws stuff)
+       this.context = this.canvas.getContext("2d");
+
+       // Characters that represent a turn
+       this.turn_chars = ["b", "r"];
+
+       // Colors for each turn (element 0 applies to turn_chars[0] etc)
+       this.turn_colors = ["black", "#B8022C"];
+
+       // Stores the rectangles for the tiles
+       // 2D-Array
+       this.tile_rects = [];
+
+       // Initialize an image element for the 
+       // "Kinged" image
+       this.king_image = new Image();
+       this.king_image.src = "/assets/crown-small.png";
+
+       this.king_img_loaded = false;
+
+       // Row and column for a piece that the user
+       // selects
+       this.selected_piece_r = -1;
+       this.selected_piece_c = -1;
+
+       // The color to highlight tiles for possible 
+       // moves (when match state = 1)
+       this.selected_tile_color = "#76A2F5";
+
+       // A container for possible moves
+       this.possible_moves = null;
+
+       this.board = JSON.parse('[[" ","b"," ","b"," ","b"," ","b"],["b"," ","b"," ","b"," ","b"," "],[" ","b"," ","b"," ","b"," ","b"],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],["r"," ","r"," ","r"," ","r"," "],[" ","r"," ","r"," ","r"," ","r"],["r"," ","r"," ","r"," ","r"," "]]');
+       this.init();
+       this.wire_events();
+   };
+
+   CheckersView.prototype.wire_events = function()
+   {
+       this.canvas.addEventListener('click', this.handle_input.bind(this));
+   }
+
+   // Create tile rectangles 
+   CheckersView.prototype.init = function()
+   {
+       var drawx = this.rect.x, drawy = this.rect.y;
+
+       for (i = 0; i < BOARD_ROWS; i++)
+       {
+    	   var row = [];
+    	   drawx = this.rect.x; 
+    	   for (j = 0; j < BOARD_COLS; j++)
+    	   {
+    	       var x = drawx, y = drawy;
+    	       var w = TILE_WIDTH, h = TILE_HEIGHT;
+
+    	       row.push(new Rect(x, y, w, h));
+    	       drawx += TILE_WIDTH;
+    	   }
+
+    	   drawy += TILE_HEIGHT;
+    	   this.tile_rects.push(row);
+       }
+   }
+
+   // Check for user click input 
+   CheckersView.prototype.handle_input = function(event)
+   {
+       
+   };
+
+   CheckersView.prototype.update = function(state)
+   {
+       this.board = state; 
+   };  
+
+   CheckersView.prototype.draw = function()
+   {
+       var color_counter = 1;
+       this.context.font = '40pt Verdana';
+       console.log(this.board);
+       // TODO: Update display for turn and
+       // winner (probably use HTML element
+       // instead of canvas)
+
+       // Draw the tile rects
+       for (i = 0; i < BOARD_ROWS; i++)
+       {
+    	   for (j = 0; j < BOARD_COLS; j++)
+    	   {
+    	       var rect = this.tile_rects[i][j];
+    	       var color = this.turn_colors[color_counter % this.turn_colors.length];
+    	       draw_rectangle(this.context, {x: rect.x, y: rect.y}, rect.w, rect.h, color);
+    	       color_counter++;
+    	   }
+    	   color_counter++;
+       }
+
+       for (var i = 0; i < this.board.length; i++)
+       {
+           for (var j = 0; j < this.board[i].length; j++)
+           {
+               if (this.board[i][j] == ' ') continue;
+               var cx = this.rect.x + j * TILE_WIDTH + TILE_WIDTH / 2;
+               var cy = this.rect.y + i * TILE_HEIGHT + TILE_HEIGHT / 2;
+               var color = (this.board[i][j].toLowerCase() == this.turn_chars[0]) ? this.turn_colors[0] : this.turn_colors[1];
+
+               draw_filled_circle(this.context, {x: cx, y: cy}, 
+                                  (TILE_WIDTH - 10) / 2, color, 1, "#ffff66");
+
+               if (this.board[i][j] == 'R' || this.board[i][j] == 'B')
+               {
+                   var x = this.rect.x + j * TILE_WIDTH + this.king_image.width / 2;
+                   var y = this.rect.y + i * TILE_HEIGHT + this.king_image.height / 2;
+                   this.context.drawImage(this.king_image, x, y);
+               }
+           }
+       }       
+   };
+
+   view = new CheckersView(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+   view.display = view.draw;
+   console.log(view.display);
+  </script>
+<% end %>
+
 <script>
- var states = [];
-
- function GameView(width, height){
-   this.canvas = document.createElement("canvas");
-   this.canvas.width = width;
-   this.canvas.height = height;
-   this.context = this.canvas.getContext("2d");
-   this.elements = [];
- }
-
- GameView.prototype.display = function(){
-   for (var i = 0; i < this.elements.length; ++i){
-     this.elements[i].draw(this.context);
-   }
- }
-
- GameView.prototype.registerElement = function(element){
-   this.elements.push(element);
- }
-
- GameView.prototype.removeElement = function(element){
-   index = this.elements.indexOf(element);
-   if (index > -1)
-     this.elements.slice(index, 1);
- }
-
- function BoardView(state){
-   this.state = state;
- }
-
- BoardView.prototype.update = function(state){
-
-   this.state = state;
- }
-
- BoardView.prototype.draw = function(context){
- }
- 
- var tttState = <%= @match.state.html_safe %>;
-
- tttView = new GameView(500, 500);
- tttBoardView = new BoardView(tttState);
-
- tttBoardView.draw = function(context){
-   width = context.canvas.clientWidth;
-   height = context.canvas.clientHeight;
-   context.beginPath();
-   context.strokeStyle = '#000'; 
-   context.lineWidth   = 4;
-
-   context.moveTo((width / 3), 0);
-   context.lineTo((width / 3), height);
-
-   context.moveTo((width / 3) * 2, 0);
-   context.lineTo((width / 3) * 2, height);
-
-   context.moveTo(0, (height / 3));
-   context.lineTo(width, (height / 3));
-
-   context.moveTo(0, (height / 3) * 2);
-   context.lineTo(width, (height / 3) * 2);
-
-   context.stroke();
-   context.closePath();
-
-   for (var r = 0; r < 3; ++r){
-     for (var c = 0; c < 3; ++c){
-       if (this.state[r][c] == 'x')
-         drawX(context, r, c);
-       else if (this.state[r][c] == 'o')
-         drawO(context, r, c);
-     }
-   }
-   
-   function drawX(context, x, y){
-     context.beginPath();
-
-     context.strokeStyle = '#ff0000'; 
-     context.lineWidth   = 4;
-
-     var offsetX = (width / 3) * 0.1;
-     var offsetY = (height / 3) * 0.1;
-
-     var beginX = x * (width / 3) + offsetX;
-     var beginY = y * (height / 3) + offsetY;
-
-     var endX = (x + 1) * (width / 3) - offsetX * 2;
-     var endY = (y + 1) * (height / 3) - offsetY * 2;
-
-     context.moveTo(beginX, beginY);
-     context.lineTo(endX, endY); 
-
-     context.moveTo(beginX, endY);
-     context.lineTo(endX, beginY); 	
-
-     context.stroke();
-     context.closePath();
-   }
-   
-   function drawO(context, x, y){
-     context.beginPath();
-
-     context.strokeStyle = '#0000ff'; 
-     context.lineWidth   = 4;
-
-     var offsetX = (width / 3) * 0.1;
-     var offsetY = (height / 3) * 0.1;
-
-     var beginX = x * (width / 3) + offsetX;
-     var beginY = y * (height / 3) + offsetY;
-
-     var endX = (x + 1) * (width / 3) - offsetX * 2;
-     var endY = (y + 1) * (height / 3) - offsetY * 2;
-
-     context.arc(beginX + ((endX - beginX) / 2),
-                           beginY + ((endY - beginY) / 2), 
-                                     (endX - beginX) / 2 , 
-                                      0, Math.PI * 2, true);
-
-     context.stroke();
-     context.closePath();
-   }
- }
-
- tttView.registerElement(tttBoardView);
-
  $(function() {
-   document.getElementById("gameArea").appendChild(tttView.canvas);
-   tttView.display();
+     document.getElementById("gameArea").appendChild(view.canvas);
+     view.display();
  });
 </script>
 
@@ -136,44 +333,51 @@
    var scheme   = "<%= @scheme %>";
    var uri      = scheme + window.document.location.host + "/";
    var ws       = new WebSocket(uri);
+   
    ws.onopen = function(){
-     ws.send(JSON.stringify({"ch": <%= @match.id %>}));
+       ws.send(JSON.stringify({"ch": <%= @match.id %>}));
    };
+   
    ws.onmessage = function(message) {
-     console.log(message);
-     var data = JSON.parse(message.data);
-     if ("welcome" in data)
-       console.log(data);
-     else if ("result" in data){
-       ws.close();
-       if (data.result == "t")
-         document.getElementById("result").appendChild(document.createTextNode("Result: It's a tie!!"));
-       else
-         document.getElementById("result").appendChild(document.createTextNode("Result: " + data.result + " has won!"));
-     }
-     else{
-       tttState = JSON.parse(data.state);
-       console.log("data:");
-       console.log(data);
-       tttBoardView.update(tttState);
-       tttView.display();
-       $("#move-history").append("<div class='panel panel-default'><div class='panel-heading'>" + data.piece + "</div><div class='panel-body'>" + data.move + "</div></div>");
-       $("#move-history").stop().animate({
-         scrollTop: $('#move-history')[0].scrollHeight
-       }, 800);
-       states.push(tttState);
-     }
+       console.log(message);
+       var data = JSON.parse(message.data);
+       if ("welcome" in data)
+           console.log(data);
+       else if ("result" in data){
+           ws.close();
+           if (data.result == "t")
+               document.getElementById("result").appendChild(
+                   document.createTextNode("Result: It's a tie!!"));
+           else
+               document.getElementById("result").appendChild(
+                   document.createTextNode("Result: " + data.result + " has won!"));
+       }
+       else{
+           state = JSON.parse(data.state);
+           console.log("data:");
+           console.log(data);
+           view.update(state);
+           view.display();
+           $("#move-history").append(
+               "<div class='panel panel-default'><div class='panel-heading'>" +
+               data.piece + "</div><div class='panel-body'>" + data.move +
+               "</div></div>");
+           $("#move-history").stop().animate({
+               scrollTop: $('#move-history')[0].scrollHeight
+           }, 800);
+           // states.push(state);
+       }
    };
 
    window.onbeforeunload = function(){
-     ws.onclose = function(){};
-     ws.close();
+       ws.onclose = function(){};
+       ws.close();
    };
   </script>
 <% end %>
 
 <div class="row">
-  <div class="col-md-6" id="gameArea">
+  <div class="center" id="gameArea">
     <h1 id="result">
       <% unless @match.result == "open" %>
         <% if @match.result == "t" %>
@@ -185,41 +389,44 @@
     </h1>
     <br>
   </div>
-  <div class="col-md-6">
-    <h1>Move History</h1>
-    <div id="move-history">
-      <% JSON.parse(@match.moveHistory).each do |x|%>
-        <div class='panel panel-default'>
-          <div class='panel-heading'>
-            <% if x['piece'] == 'x' %>
-              <% if @match.mario.is_a? User %>
-                <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
-              <% else %>
-                <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
-                <strong>
-                  <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
-                </strong>
-              <% end %>
+</div>
+<br>
+<br>
+<div class="row">
+  <h1 class="center">Move History</h1>
+  <div class="col-md-6 col-md-offset-3" id="move-history">
+    <% JSON.parse(@match.moveHistory).each do |x|%>
+      <div class='panel panel-default'>
+        <div class='panel-heading'>
+          <% if x['piece'] == 'x' %>
+            <% if @match.mario.is_a? User %>
+              <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
             <% else %>
-              <% if @match.mario.is_a? User %>
-                <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
-              <% else %>
-                <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
-                <strong>
-                  <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
-                </strong>
-              <% end %>
+              <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
+              <strong>
+                <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
+              </strong>
             <% end %>
-            placed an <%= x['piece'] %> at
-          </div>
-          <div class='panel-body'>
-            <%= x['move'] %>
-          </div>
+          <% else %>
+            <% if @match.mario.is_a? User %>
+              <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
+            <% else %>
+              <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
+              <strong>
+                <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
+              </strong>
+            <% end %>
+          <% end %>
+          placed an <%= x['piece'] %> at
         </div>
+        <div class='panel-body'>
+          <%= x['move'] %>
+        </div>
+      </div>
 
-        <!-- <script> states.push(x['move']); </script> -->
-      <% end %>
-    </div>
+      <!-- <script> states.push(x['move']); </script> -->
+    <% end %>
   </div>
 </div>
+
 

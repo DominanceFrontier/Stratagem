@@ -5,13 +5,13 @@
   <div class="col-md-6 col-md-offset-3">
     <%= form_tag({controller: "matches", action: "new"}, method: "get", class: "match_form") do %>
 
-    <%= label_tag(:type, "Match Type:") %>
-    <%= select_tag(:type, options_for_select([['Ai vs. Ai', 'Ai'], ['Human vs. Human', 'Human'], ['Human vs. Ai', 'H_Ai'], ['Ai vs. Human', 'Ai_H']])) %>
+      <%= label_tag(:type, "Match Type:") %>
+      <%= select_tag(:type, options_for_select([['Ai vs. Ai', 'Ai'], ['Human vs. Human', 'Human'], ['Human vs. Ai', 'H_Ai'], ['Ai vs. Human', 'Ai_H']])) %>
 
-    <%= label_tag(:game, "Game:") %>
-    <%= select_tag(:game, options_from_collection_for_select(Game.all, :id, :name)) %>
+      <%= label_tag(:game, "Game:") %>
+      <%= select_tag(:game, options_from_collection_for_select(Game.all, :id, :name)) %>
 
-    <%= submit_tag "Next", class: "btn" %>
+      <%= submit_tag "Next", class: "btn" %>
 
     <% end %>
   </div>

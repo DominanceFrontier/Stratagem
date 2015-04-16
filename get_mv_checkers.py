@@ -16,6 +16,6 @@ def get_move(state, time_left=None, player=None):
     cols_with_player = [col for col in enumerate(chosen_row[1]) if col[1] == player]
     origin_c = random.choice(cols_with_player)[0]
     move_r = origin_r + direction
-    move_c = origin_c + 2
+    move_c = origin_c - 1
     
     return json.dumps([(origin_r, origin_c), (move_r, move_c)])
