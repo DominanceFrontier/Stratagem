@@ -5,19 +5,19 @@
 
 /* This file is part of OWL JavaScript Utilities.
 
-OWL JavaScript Utilities is free software: you can redistribute it and/or 
-modify it under the terms of the GNU Lesser General Public License
-as published by the Free Software Foundation, either version 3 of
-the License, or (at your option) any later version.
+   OWL JavaScript Utilities is free software: you can redistribute it and/or 
+   modify it under the terms of the GNU Lesser General Public License
+   as published by the Free Software Foundation, either version 3 of
+   the License, or (at your option) any later version.
 
-OWL JavaScript Utilities is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+   OWL JavaScript Utilities is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public 
-License along with OWL JavaScript Utilities.  If not, see 
-<http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU Lesser General Public 
+   License along with OWL JavaScript Utilities.  If not, see 
+   <http://www.gnu.org/licenses/>.
 */
 
 owl = (function() {
@@ -53,7 +53,7 @@ owl = (function() {
                 // copy the whole thing, property-by-property.
                 if ( target instanceof target.constructor && target.constructor !== Object ) { 
                     var c = clone(target.constructor.prototype);
-                
+                    
                     // give the copy all the instance properties of target.  It has the same
                     // prototype as target, so inherited properties are already there.
                     for ( var property in target) { 
@@ -110,7 +110,7 @@ owl = (function() {
         constructor: DeepCopyAlgorithm,
 
         maxDepth: 256,
-            
+        
         // add an object to the cache.  No attempt is made to filter duplicates;
         // we always check getCachedResult() before calling it.
         cacheResult: function(source, result) {
@@ -356,7 +356,7 @@ function replaceAll(str, find, replace)
 
 function rcstr(row, col)
 {
-  return row.toString() + "," + col.toString();
+    return row.toString() + "," + col.toString();
 }
 
 // ============================================================================
@@ -368,12 +368,12 @@ function rcstr(row, col)
 // value = string to represent the piece
 var Piece = function(value)
 {
-  this.value = value; 
+    this.value = value; 
 };
 
 Piece.prototype.toString = function()
 {
-  return this.value;
+    return this.value;
 };
 
 // ============================================================================
@@ -384,14 +384,14 @@ Piece.prototype.toString = function()
 
 var CheckersPiece = function(value)
 {
-  Piece.call(this, value);
+    Piece.call(this, value);
 
-  this.is_king = false;
+    this.is_king = false;
 };
 
 CheckersPiece.prototype.king = function()
 {
-  this.is_king = true; 
+    this.is_king = true; 
 };
 
 // ============================================================================
@@ -429,12 +429,12 @@ var PieceTileAssociation = function(piece, tile)
 // turn_chars = Array(chars)
 var Board = function(rows, cols, turn_chars)
 {
-  this.rows = rows;
-  this.cols = cols;
-  this.arr = [];
-  this.turn_index = 0;
-  this.turn_chars = turn_chars;
-  this.piece_tile_assocs = {};
+    this.rows = rows;
+    this.cols = cols;
+    this.arr = [];
+    this.turn_index = 0;
+    this.turn_chars = turn_chars;
+    this.piece_tile_assocs = {};
 };
 
 Board.prototype.toString = function()
@@ -486,9 +486,9 @@ Board.prototype.make_move = function(r0, c0, r1, c1)
 
     // king a piece
     if ((this.piece_tile_assocs[rcstr(r1, c1)].piece.value == this.turn_chars[0] && 
-            this.piece_tile_assocs[rcstr(r1, c1)].tile.row == this.rows - 1) ||
+         this.piece_tile_assocs[rcstr(r1, c1)].tile.row == this.rows - 1) ||
         (this.piece_tile_assocs[rcstr(r1, c1)].piece.value == this.turn_chars[1] && 
-                this.piece_tile_assocs[rcstr(r1, c1)].tile.row == 0))
+         this.piece_tile_assocs[rcstr(r1, c1)].tile.row == 0))
     {
         this.piece_tile_assocs[rcstr(r1, c1)].piece.king();
     }
@@ -506,18 +506,33 @@ Board.prototype.init = function()
     var rows = [];
     for (i = 0; i < this.rows; i++)
     {
-      var row = [];
-      for (j = 0; j < this.cols; j++)
-      {
-        var t = new Tile(i, j);
-    
-        row.push(t);
-      }
-      rows.push(row);
+        var row = [];
+        for (j = 0; j < this.cols; j++)
+        {
+            var t = new Tile(i, j);
+            
+            row.push(t);
+        }
+        rows.push(row);
     }
     
     this.arr = rows;
 };
+
+Board.prototype.load = function(state)
+{
+    for (i = 0; i < this.rows; i++)
+    {
+        for (j = 0; j < this.cols; j++)
+        {
+            if (state[i][j] != ' ')
+            {
+                var p = new CheckersPiece(state[i][j]);
+                this.add_piece(p, i, j);
+            }
+        }
+    }
+}
 
 // ============================================================================
 
@@ -740,8 +755,14 @@ CheckersGame.prototype.is_valid_move = function(board, r0, c0, r1, c1, turn)
 // make_move on the clone.
 CheckersGame.prototype.isValidMove = function(board, move)
 {
+    state = JSON.parse(board);
+    move = JSON.parse(move);
+    board = new Board(8, 8, this.turn_values);
+    board.init();
+    board.load(state);
+    
     var boardc = owl.deepCopy(board)
-    var valid = true; 
+    var valid = true;
     var assoc = board.piece_tile_assocs[rcstr(move[0][0], move[0][1])];
 
     if (assoc === undefined)
@@ -774,6 +795,12 @@ CheckersGame.prototype.isValidMove = function(board, move)
 // board's make_move but should be implemented as part of CheckersGame.
 CheckersGame.prototype.makeMove = function(board, move, turn)
 {
+    state = JSON.parse(board);
+    move = JSON.parse(move);
+    board = new Board(8, 8, this.turn_values);
+    board.init();
+    board.load(state);
+    
     for (var i = 0; i < move.length - 1; i++)
     {
         var src = move[i];
@@ -791,13 +818,18 @@ CheckersGame.prototype.makeMove = function(board, move, turn)
 // If there's a tie, return 't'. Return " " otherwise.
 CheckersGame.prototype.checkForWinner = function(board, turn)
 {
+    state = JSON.parse(board);
+    board = new Board(8, 8, this.turn_values);
+    board.init();
+    board.load(state);
+    
     var p1count = 0, p2count = 0;
 
     for (key in board.piece_tile_assocs)
     {
         if (board.piece_tile_assocs.hasOwnProperty(key))
         {
-            var a = baord.piece_tile_assocs[key];
+            var a = board.piece_tile_assocs[key];
             
             if (a.piece.value == turn)
                 p1count++;
@@ -839,16 +871,16 @@ var Match = function()
     // Initial state in 2-D array form 
     // for the purpose of loading the board
     this.simple_init_state = [
-    [' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0]],
-    [turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0], ' '],
-    [' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0]],
+        [' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0]],
+        [turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0], ' '],
+        [' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0], ' ', turn_chars[0]],
 
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
 
-    [turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' '],
-    [' ', turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1]],
-    [turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' '],
+        [turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' '],
+        [' ', turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1]],
+        [turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' ', turn_chars[1], ' '],
     ];
 
 
