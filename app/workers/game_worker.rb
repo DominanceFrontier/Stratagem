@@ -119,15 +119,15 @@ class GameWorker
   def make_move
     @match.state = @game.makeMove(@match.state, @move, @player[:symbol])
     move_list = JSON.parse(@match.moveHistory)
-    move_list << {"piece" => @player[:symbol],
+    move_list << {"piece" => @player[:symbol], "state" => @match.state,
                   "time_left" => @player[:time_left], "move" => @move}
     @match.moveHistory = JSON.generate(move_list)
     @match.save
   end
 
   def publish_move
-    game_status = {"piece" => @player[:symbol], "move" => @move,
-                   "state" => @match.state}
+    game_status = {"piece" => @player[:symbol], "state" => @match.state,
+                   "time_left" => @player[:time_left], "move" => @move}
     @redis.publish(@redis_channel, JSON.generate(game_status))
   end
   
