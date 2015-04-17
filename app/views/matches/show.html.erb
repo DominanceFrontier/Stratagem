@@ -10,6 +10,7 @@
     <% end %>
 
     state_index = <%= JSON.parse(@match.moveHistory).length %>;
+    console.log(match_states);
   <% end %>
 </script> 
 
@@ -46,8 +47,10 @@
    }
 
    BoardView.prototype.update = function(state){
+       console.log("herezzz");
 
        this.state = state;
+       console.log(this.state);
    }
 
    BoardView.prototype.draw = function(context){
@@ -59,6 +62,8 @@
    tttBoardView = new BoardView(tttState);
 
    tttBoardView.draw = function(context){
+       context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
        width = context.canvas.clientWidth;
        height = context.canvas.clientHeight;
        context.beginPath();
@@ -80,12 +85,15 @@
        context.stroke();
        context.closePath();
 
+       console.log("drawing...");
+       console.log(this.state);
+
        for (var r = 0; r < 3; ++r){
            for (var c = 0; c < 3; ++c){
                if (this.state[r][c] == 'x')
-                   drawX(context, r, c);
+                   drawX(context, c, r);
                else if (this.state[r][c] == 'o')
-                   drawO(context, r, c);
+                   drawO(context, c, r);
            }
        }
        
@@ -143,7 +151,10 @@
    view = tttView;
    view.update = function(state){
        for (var i = 0; i < this.elements.length; ++i)
+       {
+           console.log("here");
            this.elements[i].update(state);
+       }
    };
   </script>
 <% else %>
@@ -217,7 +228,9 @@
        this.turn_chars = ["b", "r"];
 
        // Colors for each turn (element 0 applies to turn_chars[0] etc)
+       this.tile_colors = ["#1F1F1F", "#B51945"];
        this.turn_colors = ["black", "#B8022C"];
+       this.outline_colors = ["#5C5B5B", "#5c0116"]
 
        // Stores the rectangles for the tiles
        // 2D-Array
@@ -304,7 +317,7 @@
     	   for (j = 0; j < BOARD_COLS; j++)
     	   {
     	       var rect = this.tile_rects[i][j];
-    	       var color = this.turn_colors[color_counter % this.turn_colors.length];
+    	       var color = this.tile_colors[color_counter % this.turn_colors.length];
     	       draw_rectangle(this.context, {x: rect.x, y: rect.y}, rect.w, rect.h, color);
     	       color_counter++;
     	   }
@@ -320,8 +333,10 @@
                var cy = this.rect.y + i * TILE_HEIGHT + TILE_HEIGHT / 2;
                var color = (this.board[i][j].toLowerCase() == this.turn_chars[0]) ? this.turn_colors[0] : this.turn_colors[1];
 
+               var ocolor = (this.board[i][j].toLowerCase() == this.turn_chars[0]) ? this.outline_colors[0] : this.outline_colors[1];
+
                draw_filled_circle(this.context, {x: cx, y: cy}, 
-                                  (TILE_WIDTH - 10) / 2, color, 1, "#ffff66");
+                                  (TILE_WIDTH - 10) / 2, color, 3, ocolor);
 
                if (this.board[i][j] == 'R' || this.board[i][j] == 'B')
                {
@@ -384,12 +399,16 @@
            }, 800);
 
            match_states.push(state);
-           unhighlight(state_index);
-           state_index++;
-           highlight_move();
+           
+           if (state_index == match_states.length - 2)
+           {
+            unhighlight(state_index);
+            state_index++;
+            highlight_move();
 
-           view.update(state);
-           view.display();
+            view.update(state);
+            view.display();
+           }
 
            // states.push(state);
        }
@@ -413,12 +432,22 @@
         <% end %>
       <% end %>
     </h1>
-    <br>
+    
+  </div>
+</div>
+<div class="row">
+  <div class="center">
+    <button id="startbutton" class="bigbutton btn btn-xs btn-primary">
+      <span class="glyphicon glyphicon-fast-backward"></span>
+    </button>
     <button type="button" id="leftbutton" class="bigbutton btn btn-xs btn-primary">
-      <span class="glyphicon glyphicon-chevron-left"></span>&nbsp;
+      <span class="glyphicon glyphicon-backward"></span>&nbsp;
     </button>
     <button type="button" id="rightbutton" class="bigbutton btn btn-xs btn-primary">
-      <span class="glyphicon glyphicon-chevron-right"></span>&nbsp;
+      <span class="glyphicon glyphicon-forward"></span>&nbsp;
+    </button>
+    <button id="endbutton" class="bigbutton btn btn-xs btn-primary">
+      <span class="glyphicon glyphicon-fast-forward"></span>
     </button>
   </div>
 </div>
@@ -494,8 +523,38 @@
     unhighlight(state_index);
     state_index = $(this).index();
     highlight_move(); 
+    console.log("state_index:" + state_index.toString());
+    console.log("match_states[state_index] = " + JSON.stringify(match_states[state_index]));
     view.update(match_states[state_index]);
     view.display();   
+  });
+
+  $("#startbutton").click(function ()
+  {
+    unhighlight(state_index);
+    state_index = 0;
+    highlight_move();
+
+    view.update(match_states[state_index]);
+    view.draw();   
+
+    $("#move-history").stop().animate({
+        scrollTop: 0
+    }, 800); 
+  });
+
+  $("#endbutton").click(function () 
+  {
+    unhighlight(state_index);
+    state_index = match_states.length - 1;
+    highlight_move();
+
+    view.update(match_states[state_index]);
+    view.draw();
+
+    $("#move-history").stop().animate({
+        scrollTop: $('#move-history')[0].scrollHeight
+    }, 800);
   });
 
   $("#leftbutton").click(function() 
