@@ -1,3 +1,18 @@
+<script>
+  var match_states = [];
+  match_states.push( JSON.parse('<%= @match.game.initial_state.html_safe %>') );
+  
+  var state_index = 0;
+
+  <% if @match.result != "open" %> 
+    <% JSON.parse(@match.moveHistory).each do |x|%>
+      match_states.push( JSON.parse('<%= x['state'].html_safe %>') );
+    <% end %>
+
+    state_index = <%= JSON.parse(@match.moveHistory).length %>;
+  <% end %>
+</script> 
+
 <% if @match.game.name == "Tic-Tac-Toe" %>
   <script>
    var states = [];
@@ -227,7 +242,8 @@
        // A container for possible moves
        this.possible_moves = null;
 
-       this.board = JSON.parse('<%= @match.state.html_safe %>');
+       this.board = match_states[state_index];
+       // this.board = JSON.parse('<%= @match.state.html_safe %>');
 
        /* this.board = JSON.parse('[[" ","b"," ","b"," ","b"," ","b"],["b"," ","b"," ","b"," ","b"," "],[" ","b"," ","b"," ","b"," ","b"],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],["r"," ","r"," ","r"," ","r"," "],[" ","r"," ","r"," ","r"," ","r"],["r"," ","r"," ","r"," ","r"," "]]'); */
        this.init();
@@ -358,8 +374,7 @@
            state = JSON.parse(data.state);
            console.log("data:");
            console.log(data);
-           view.update(state);
-           view.display();
+
            $("#move-history").append(
                "<div class='panel panel-default'><div class='panel-heading'>" +
                data.piece + "</div><div class='panel-body'>" + data.move +
@@ -367,6 +382,15 @@
            $("#move-history").stop().animate({
                scrollTop: $('#move-history')[0].scrollHeight
            }, 800);
+
+           match_states.push(state);
+           unhighlight(state_index);
+           state_index++;
+           highlight_move();
+
+           view.update(state);
+           view.display();
+
            // states.push(state);
        }
    };
@@ -390,6 +414,12 @@
       <% end %>
     </h1>
     <br>
+    <button type="button" id="leftbutton" class="bigbutton btn btn-xs btn-primary">
+      <span class="glyphicon glyphicon-chevron-left"></span>&nbsp;
+    </button>
+    <button type="button" id="rightbutton" class="bigbutton btn btn-xs btn-primary">
+      <span class="glyphicon glyphicon-chevron-right"></span>&nbsp;
+    </button>
   </div>
 </div>
 <br>
@@ -397,6 +427,15 @@
 <div class="row">
   <h1 class="center">Move History</h1>
   <div class="col-md-6 col-md-offset-3" id="move-history">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Game start
+        </div>
+        <div class="panel-body">
+          
+        </div>
+      </div>
+
     <% JSON.parse(@match.moveHistory).each do |x|%>
       <div class='panel panel-default'>
         <div class='panel-heading'>
@@ -431,4 +470,56 @@
   </div>
 </div>
 
+<script>
 
+  function highlight_move()
+  {
+    var move = $("#move-history > div.panel")[state_index];
+    move = $(move);
+    move.addClass("panel-success");
+    console.log(move);
+  }
+
+  highlight_move();
+
+  function unhighlight(i)
+  {
+    var move = $("#move-history > div.panel")[i];
+    move = $(move);
+    move.removeClass("panel-success");
+  }
+
+  $("#move-history").on('click', 'div.panel', function() 
+  {
+    unhighlight(state_index);
+    state_index = $(this).index();
+    highlight_move(); 
+    view.update(match_states[state_index]);
+    view.display();   
+  });
+
+  $("#leftbutton").click(function() 
+   {
+      if (state_index > 0) 
+      {
+        unhighlight(state_index);
+        state_index--;
+      }
+      console.log(state_index);
+      console.log(match_states[state_index]);
+      view.update(match_states[state_index]);
+      view.display();
+      highlight_move();
+   });
+  $("#rightbutton").click(function() 
+   {
+     if (state_index < match_states.length - 1)
+     {
+       unhighlight(state_index);
+       state_index++;
+     }
+     view.update(match_states[state_index]);
+     view.display();
+     highlight_move();
+   });
+</script>
