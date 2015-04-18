@@ -458,7 +458,7 @@
   <div class="col-md-6 col-md-offset-3" id="move-history">
       <div class="panel panel-default">
         <div class="panel-heading">
-          Game start
+          0. Game start
         </div>
         <div class="panel-body">
           
@@ -536,7 +536,7 @@
     highlight_move();
 
     view.update(match_states[state_index]);
-    view.draw();   
+    view.display();   
 
     $("#move-history").stop().animate({
         scrollTop: 0
@@ -550,12 +550,14 @@
     highlight_move();
 
     view.update(match_states[state_index]);
-    view.draw();
+    view.display();
 
     $("#move-history").stop().animate({
         scrollTop: $('#move-history')[0].scrollHeight
     }, 800);
   });
+
+
 
   $("#leftbutton").click(function() 
    {
@@ -569,6 +571,13 @@
       view.update(match_states[state_index]);
       view.display();
       highlight_move();
+
+      var element = $("#move-history div.panel")[state_index];
+      element = $(element);
+
+      $("#move-history").stop().animate({
+          scrollTop: element.offset().top
+      }, 800);
    });
   $("#rightbutton").click(function() 
    {
@@ -580,5 +589,12 @@
      view.update(match_states[state_index]);
      view.display();
      highlight_move();
+
+     var element = $("#move-history div.panel")[state_index];
+     element = $(element);
+
+     $("#move-history").stop().animate({
+         scrollTop: element.offset().top
+     }, 800);
    });
 </script>
