@@ -3,5 +3,13 @@
   <td><%= match.game.name %>
   <td><%= link_to match.mario.username, match.mario %> </td>
   <td><%= link_to match.luigi.username, match.luigi %> </td>
-  <td><%= match.result %> </td>
+  <% if match.result == 'x' || match.result == 'b' %>
+    <td><%= link_to match.mario.username, match.mario %> </td>
+  <% elsif match.result == 'o' || match.result == 'r' %>
+    <td><%= link_to match.luigi.username, match.luigi %></td>
+  <% elsif match.result == 't' %>
+    <td><%= link_to "Tie", match %></td>
+  <% else %>
+    <td></td>
+  <% end %>          
 </tr>
