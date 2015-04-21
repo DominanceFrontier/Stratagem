@@ -23,9 +23,14 @@ class GameWorker
       p ["time_left", @player[:time_left]]
       fetch_move
       p ["Move: ", @move]
+
+      x = @game.isValidMove(@match.state, @move)
+      p ["isValidMove: " + x.to_s] 
+
       return illegal if @move.nil?
       return timeout if @move.empty? || @player[:time_left] < 0
-      return illegal unless @game.isValidMove(@match.state, @move)
+
+      return illegal unless x
       make_move
       publish_move
       
