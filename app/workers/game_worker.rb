@@ -23,6 +23,7 @@ class GameWorker
       p ["time_left", @player[:time_left]]
       fetch_move
       p ["Move: ", @move]
+      return illegal if @move.nil?
       return timeout if @move.empty? || @player[:time_left] < 0
       return illegal unless @game.isValidMove(@match.state, @move)
       make_move
@@ -99,8 +100,10 @@ class GameWorker
     start_time = Process.times
     Process.wait pid
     w.close
-    @move = r.read
+    move = r.read
     r.close
+    p ["move from runner", move]
+    @move = move.split("\n")[-1]
     end_time = Process.times
     total_time = end_time.cutime - start_time.cutime +
                  end_time.cstime - start_time.cstime
