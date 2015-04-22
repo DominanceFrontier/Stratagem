@@ -22,3 +22,5 @@ dump.rdb
 # Ignore uploaded files.
 /public/uploads
 
+# Ignore python bytecode.
+*.pyc
