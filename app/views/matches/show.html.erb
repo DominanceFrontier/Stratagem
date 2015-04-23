@@ -1,17 +1,17 @@
 <script>
-  var match_states = [];
-  match_states.push( JSON.parse('<%= @match.game.initial_state.html_safe %>') );
-  
-  var state_index = 0;
+ var match_states = [];
+ match_states.push( JSON.parse('<%= @match.game.initial_state.html_safe %>') );
+ 
+ var state_index = 0;
 
-  <% if @match.result != "open" %> 
-    <% JSON.parse(@match.moveHistory).each do |x|%>
-      match_states.push( JSON.parse('<%= x['state'].html_safe %>') );
-    <% end %>
+ <% if @match.result != "open" %> 
+ <% JSON.parse(@match.moveHistory).each do |x|%>
+ match_states.push( JSON.parse('<%= x['state'].html_safe %>') );
+ <% end %>
 
-    state_index = <%= JSON.parse(@match.moveHistory).length %>;
-    console.log(match_states);
-  <% end %>
+ state_index = <%= JSON.parse(@match.moveHistory).length %>;
+ console.log(match_states);
+ <% end %>
 </script> 
 
 <% if @match.game.name == "Tic-Tac-Toe" %>
@@ -159,12 +159,12 @@
   </script>
 <% else %>
   <script>
-   var CANVAS_WIDTH = 640;
-   var CANVAS_HEIGHT = 700;
+   var CANVAS_WIDTH = 560;
+   var CANVAS_HEIGHT = 560;
    var BOARD_ROWS = 8;
    var BOARD_COLS = 8;
-   var TILE_WIDTH = 80;
-   var TILE_HEIGHT = 80;
+   var TILE_WIDTH = 70;
+   var TILE_HEIGHT = 70;
    var FPS = 30;
 
    function draw_rectangle(context, location, w, h, color)
@@ -402,12 +402,12 @@
            
            if (state_index == match_states.length - 2)
            {
-            unhighlight(state_index);
-            state_index++;
-            highlight_move();
+               unhighlight(state_index);
+               state_index++;
+               highlight_move();
 
-            view.update(state);
-            view.display();
+               view.update(state);
+               view.display();
            }
 
            // states.push(state);
@@ -421,22 +421,90 @@
   </script>
 <% end %>
 
-<div class="row">
-  <div class="center" id="gameArea">
-    <h1 id="result">
-      <% unless @match.result == "open" %>
-        <% if @match.result == "t" %>
-          Result: It's a tie!!
-        <% else %>
-          Result: <%= @match.result %> has won!
-        <% end %>
+<div class="row center">
+  <div class="col-md-8">
+    <h1>
+      <% if @match.game.name == "Checkers" %>
+        <%= link_to @match.mario.username, @match.mario %> (Black)
+        vs.
+        <%= link_to @match.luigi.username, @match.luigi%> (Red)
+      <% else %>
+        <%= link_to @match.mario.username, @match.mario %> (X)
+        vs.
+        <%= link_to @match.luigi.username, @match.luigi%> (O)
       <% end %>
     </h1>
-    
+  </div>
+  <div class="col-md-4">
+    <h1>Move History</h1>
   </div>
 </div>
-<div class="row">
-  <div class="center">
+
+<div class="row center">
+  <div class="col-md-8" id="gameArea">
+  </div>
+  <div class="col-md-4">
+    <section id="move-history">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          0. Game start
+        </div>
+        <div class="panel-body">  
+        </div>
+      </div>
+      <% JSON.parse(@match.moveHistory).each do |x|%>
+        <div class='panel panel-default'>
+          <div class='panel-heading'>
+            <% if x['piece'] == 'x' %>
+              <% if @match.mario.is_a? User %>
+                <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
+              <% else %>
+                <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
+                <strong>
+                  <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
+                </strong>
+              <% end %>
+            <% else %>
+              <% if @match.mario.is_a? User %>
+                <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
+              <% else %>
+                <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
+                <strong>
+                  <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
+                </strong>
+              <% end %>
+            <% end %>
+            placed an <%= x['piece'] %> at
+          </div>
+          <div class='panel-body'>
+            <%= x['move'] %>
+          </div>
+        </div>
+        <!-- <script> states.push(x['move']); </script> -->
+      <% end %>
+    </section>
+    <section>
+      <h1 id="result">
+        <% unless @match.result == "open" %>
+          <% if @match.result == "t" %>
+            Result: It's a tie!!
+          <% elsif @match.result == "b" %>
+            Black wins!
+          <% elsif @match.result == "r" %>
+            Red wins!
+          <% elsif @match.result == "x" %>
+            X wins!
+          <% elsif @match.reuslt == "o" %>
+            O wins!
+          <% end %>
+        <% end %>
+      </h1>
+    </section>
+  </div>
+</div>
+
+<div class="row center">
+  <div class="col-md-8">
     <button id="startbutton" class="bigbutton btn btn-xs btn-primary">
       <span class="glyphicon glyphicon-fast-backward"></span>
     </button>
@@ -451,150 +519,103 @@
     </button>
   </div>
 </div>
-<br>
-<br>
-<div class="row">
-  <h1 class="center">Move History</h1>
-  <div class="col-md-6 col-md-offset-3" id="move-history">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          0. Game start
-        </div>
-        <div class="panel-body">
-          
-        </div>
-      </div>
-
-    <% JSON.parse(@match.moveHistory).each do |x|%>
-      <div class='panel panel-default'>
-        <div class='panel-heading'>
-          <% if x['piece'] == 'x' %>
-            <% if @match.mario.is_a? User %>
-              <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
-            <% else %>
-              <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
-              <strong>
-                <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
-              </strong>
-            <% end %>
-          <% else %>
-            <% if @match.mario.is_a? User %>
-              <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
-            <% else %>
-              <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
-              <strong>
-                <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
-              </strong>
-            <% end %>
-          <% end %>
-          placed an <%= x['piece'] %> at
-        </div>
-        <div class='panel-body'>
-          <%= x['move'] %>
-        </div>
-      </div>
-
-      <!-- <script> states.push(x['move']); </script> -->
-    <% end %>
-  </div>
-</div>
 
 <script>
 
-  function highlight_move()
-  {
-    var move = $("#move-history > div.panel")[state_index];
-    move = $(move);
-    move.addClass("panel-success");
-    console.log(move);
-  }
+ function highlight_move()
+ {
+     var move = $("#move-history > div.panel")[state_index];
+     move = $(move);
+     move.addClass("panel-success");
+     console.log(move);
+ }
 
-  highlight_move();
+ highlight_move();
 
-  function unhighlight(i)
-  {
-    var move = $("#move-history > div.panel")[i];
-    move = $(move);
-    move.removeClass("panel-success");
-  }
+ function unhighlight(i)
+ {
+     var move = $("#move-history > div.panel")[i];
+     move = $(move);
+     move.removeClass("panel-success");
+ }
 
-  $("#move-history").on('click', 'div.panel', function() 
-  {
-    unhighlight(state_index);
-    state_index = $(this).index();
-    highlight_move(); 
-    console.log("state_index:" + state_index.toString());
-    console.log("match_states[state_index] = " + JSON.stringify(match_states[state_index]));
-    view.update(match_states[state_index]);
-    view.display();   
-  });
-
-  $("#startbutton").click(function ()
-  {
-    unhighlight(state_index);
-    state_index = 0;
-    highlight_move();
-
-    view.update(match_states[state_index]);
-    view.display();   
-
-    $("#move-history").stop().animate({
-        scrollTop: 0
-    }, 800); 
-  });
-
-  $("#endbutton").click(function () 
-  {
-    unhighlight(state_index);
-    state_index = match_states.length - 1;
-    highlight_move();
-
-    view.update(match_states[state_index]);
-    view.display();
-
-    $("#move-history").stop().animate({
-        scrollTop: $('#move-history')[0].scrollHeight
-    }, 800);
-  });
-
-
-
-  $("#leftbutton").click(function() 
-   {
-      if (state_index > 0) 
-      {
-        unhighlight(state_index);
-        state_index--;
-      }
-      console.log(state_index);
-      console.log(match_states[state_index]);
-      view.update(match_states[state_index]);
-      view.display();
-      highlight_move();
-
-      var element = $("#move-history div.panel")[state_index];
-      element = $(element);
-
-      $("#move-history").stop().animate({
-          scrollTop: element.offset().top
-      }, 800);
-   });
-  $("#rightbutton").click(function() 
-   {
-     if (state_index < match_states.length - 1)
+ $("#move-history").on('click', 'div.panel', function() 
      {
-       unhighlight(state_index);
-       state_index++;
-     }
-     view.update(match_states[state_index]);
-     view.display();
-     highlight_move();
+         unhighlight(state_index);
+         state_index = $(this).index();
+         highlight_move(); 
+         console.log("state_index:" + state_index.toString());
+         console.log("match_states[state_index] = " + JSON.stringify(match_states[state_index]));
+         view.update(match_states[state_index]);
+         view.display();   
+     });
 
-     var element = $("#move-history div.panel")[state_index];
-     element = $(element);
+ $("#startbutton").click(function ()
+     {
+         unhighlight(state_index);
+         state_index = 0;
+         highlight_move();
 
-     $("#move-history").stop().animate({
-         scrollTop: element.offset().top
-     }, 800);
-   });
+         view.update(match_states[state_index]);
+         view.display();   
+
+         $("#move-history").stop().animate({
+             scrollTop: 0
+         }, 800); 
+     });
+
+ $("#endbutton").click(function () 
+     {
+         unhighlight(state_index);
+         state_index = match_states.length - 1;
+         highlight_move();
+
+         view.update(match_states[state_index]);
+         view.display();
+
+         $("#move-history").stop().animate({
+             scrollTop: $('#move-history')[0].scrollHeight
+         }, 800);
+     });
+
+
+
+ $("#leftbutton").click(function() 
+     {
+         if (state_index > 0) 
+         {
+             unhighlight(state_index);
+             state_index--;
+         }
+         console.log(state_index);
+         console.log(match_states[state_index]);
+         view.update(match_states[state_index]);
+         view.display();
+         highlight_move();
+
+         var element = $("#move-history div.panel")[state_index];
+         element = $(element);
+
+         $("#move-history").stop().animate({
+             scrollTop: element.offset().top
+         }, 800);
+     });
+ $("#rightbutton").click(function() 
+     {
+         if (state_index < match_states.length - 1)
+         {
+             unhighlight(state_index);
+             state_index++;
+         }
+         view.update(match_states[state_index]);
+         view.display();
+         highlight_move();
+
+         var element = $("#move-history div.panel")[state_index];
+         element = $(element);
+
+         $("#move-history").stop().animate({
+             scrollTop: element.offset().top
+         }, 800);
+     });
 </script>
