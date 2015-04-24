@@ -8,6 +8,14 @@ Ongoing Tasks
 
 Recently Finished Tasks
 -----------------------
+* Add support for Checkers.
+    - Rather haphazard way of switching between the games, try true OO sometime.
+    - Results and such take the game type into account, but not very neatly.
+* Many user interface and layout changes.
+    - Still in dire need of a good profile design.
+* List live matches and finished matches in the homepage.
+    - Not exactly sure if they should be put in the homepage yet but the
+      functionality has been implemented in a matches page.
 * Remove channels once the match is done. Don't need to communicate over websocket.
 * Run the worker for a match only once.
     - Easiest way to achieve this seems to be to add more types for match status.  
@@ -32,13 +40,13 @@ Recently Finished Tasks
 Top Priority
 ------------
 
-1. Research scalability issues for database connections and v8 contexts with therubyracer.
-2. Integrate Checkers.
-    * Need to make the match take into account the game type.
-    * This will probably break the views for lots of things.
-        - How do we store game neutral results for instance?  
-          Probably best to say something like "Player X Victory", "Tie" etc.
-3. What else??
+1. Research scalability issues for database connections and v8 contexts with
+   therubyracer.
+     * v8 interpreter crashes with a segfault. Could call JS through shell, but
+       perhaps better to just go for Ruby instead.
+2. The design promised an administrator dash board to run batch of matches. ...
+3. Player vs. Player???
+4. What else??
 
 Medium Priority
 ---------------
@@ -52,7 +60,6 @@ Low Priority
 ---------------
 
 1. Allow users to upload avatars for themselves and Ais.
-2. List live matches and finished matches in the homepage.
 3. Add a profile card that display stats etc. better.
 4. Let users sort matches, users, ais etc. based on different stas.
 5. Logo, landing page, other design stuff.
