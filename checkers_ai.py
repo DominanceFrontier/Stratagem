@@ -18,4 +18,4 @@ def get_move(state, time_left=None, player=None):
     move_r = origin_r + direction
     move_c = origin_c - 1
     
-    return json.dumps([(origin_r, origin_c), (move_r, move_c)])
+    return json.dumps([[(origin_r, origin_c), (move_r, move_c)]])
