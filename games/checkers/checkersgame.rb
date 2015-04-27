@@ -3,6 +3,28 @@ require 'json'
 
 class CheckersGame
 
+  def check_for_winner(state)
+    bcount, rcount = 0, 0
+
+    for row in state
+      for piece in row
+        if piece.downcase == 'b'
+          bcount += 1
+        elsif piece.downcase == 'r'
+          rcount += 1 
+        end
+      end
+    end
+
+    if bcount > 0 and rcount > 0
+      return ' '
+    elsif bcount > 0 and rcount == 0
+      return 'b'
+    elsif rcount > 0 and bcount == 0
+      return 'r'
+    end
+  end
+  
   # Checks if a given move sequence is valid
   # for a turn and given a specific state 
   def validate_sequence(state, sequence, turn)
@@ -31,7 +53,7 @@ class CheckersGame
 
     board.each_with_index do |row, i|
       board[i].each_with_index do |col, j|
-        if board[i][j] == turn
+        if board[i][j].downcase == turn
           sequences.concat self.move_sequences_for_piece(board, [i, j])
         end
       end
@@ -344,7 +366,7 @@ class CheckersGame
     # Make sure the src piece is the
     # same as the turn and the destination
     # is an empty space
-    if srcpiece != turn or dstpiece != ' '
+    if srcpiece.downcase != turn or dstpiece != ' '
       return false 
     end
 
