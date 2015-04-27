@@ -28,7 +28,8 @@ class CheckersGame
   # Checks if a given move sequence is valid
   # for a turn and given a specific state 
   def validate_sequence(state, sequence, turn)
-    if is_valid_sequence?(state, sequence, turn)
+    
+    if self.is_valid_sequence?(state, sequence, turn)
       possible_sequences = self.possible_sequences(state, turn)
       
       for ps in possible_sequences
@@ -282,7 +283,7 @@ class CheckersGame
         # If the piece is a king
         if srcpiece == 'R'
           # check down left
-          if src[1] - 1 >= 0
+          if src[1] - 1 >= 0 and src[0] + 1 < board.length 
             r = src[0] + 1
             c = src[1] - 1
 
@@ -292,11 +293,11 @@ class CheckersGame
           end
 
           # check down right
-          if src[1] + 1 <= board[0].length and src[0] + 1 < board.length 
+          if src[1] + 1 < board[0].length and src[0] + 1 < board.length 
             r = src[0] + 1
             c = src[1] + 1
 
-            if board[r][c] == ' ' and board[r - 1][c - 1].downcase == 'b'
+            if board[r][c] == ' '
               moves << [src, [r, c]]
             end
           end
@@ -332,6 +333,14 @@ class CheckersGame
       # Make the move 
       board[src[0]][src[1]],
       board[dst[0]][dst[1]] = ' ', board[src[0]][src[1]]
+
+      # if the move was a jump
+      if (src[0] - dst[0]).abs == 2 and (src[1] - dst[1]).abs == 2
+        r = (src[0] + dst[0]) / 2
+        c = (src[1] + dst[1]) / 2
+
+        board[r][c] = ' '
+      end
     end
 
     return true  
