@@ -6,11 +6,13 @@ class CheckersGame
   # Checks if a given move sequence is valid
   # for a turn and given a specific state 
   def validate_sequence(state, sequence, turn)
-    possible_sequences = self.possible_sequences(state, turn)
-
-    for ps in possible_sequences
-      if ps == sequence
-        return true 
+    if is_valid_sequence?(state, sequence, turn)
+      possible_sequences = self.possible_sequences(state, turn)
+      
+      for ps in possible_sequences
+        if ps == sequence
+          return true 
+        end
       end
     end
 
@@ -296,7 +298,7 @@ class CheckersGame
     valid = true  
 
     sequence.each do |move|
-      valid = valid and self.is_valid_move(state, move)
+      valid = valid and self.is_valid_move?(state, move, turn)
 
       if not valid
         return false
