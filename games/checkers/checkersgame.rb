@@ -4,7 +4,7 @@ require 'json'
 class CheckersGame
 
   def check_for_winner(state)
-    bcount, rcount = 0, 0
+    bcount, rcount = 0, 0 
 
     for row in state
       for piece in row
@@ -27,7 +27,7 @@ class CheckersGame
   
   # Checks if a given move sequence is valid
   # for a turn and given a specific state 
-  def validate_sequence(state, sequence, turn)
+  def is_valid_move?(state, sequence, turn)
     
     if self.is_valid_sequence?(state, sequence, turn)
       possible_sequences = self.possible_sequences(state, turn)
@@ -40,6 +40,33 @@ class CheckersGame
     end
 
     return false 
+  end
+
+  def make_move(state, sequence)
+    board = JSON.parse(state)
+
+    for move in sequence
+      src, dst = move
+
+       # if the move is a jump
+      if (src[0] - dst[0]).abs == 2 and (src[1] - dst[1]).abs == 2
+        r = (src[0] + dst[0]) / 2
+        c = (src[1] + dst[1]) / 2
+
+        # remove middle piece 
+        board[r][c] = ' '
+
+        # move jumping piece 
+        board[src[0]][src[1]],
+        board[dst[0]][dst[1]] = board[dst[0]][dst[1]], board[src[0]][src[1]]
+      else
+        # move piece 
+        board[src[0]][src[1]],
+        board[dst[0]][dst[1]] = board[dst[0]][dst[1]], board[src[0]][src[1]]
+      end
+    end
+
+    board.to_json 
   end
   
   # Returns: 
@@ -321,7 +348,7 @@ class CheckersGame
     valid = true  
 
     sequence.each do |move|
-      valid = valid and self.is_valid_move?(state, move, turn)
+      valid = valid and self.is_valid_space?(state, move, turn)
 
       if not valid
         return false
@@ -363,7 +390,7 @@ class CheckersGame
   # Returns:
   # - true   -> The move is valid
   # - false  -> The move is not valid  
-  def is_valid_move?(state, move, turn)
+  def is_valid_space?(state, move, turn)
     board = JSON.parse(state)
     src, dst = move 
     
