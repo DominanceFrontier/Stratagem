@@ -128,7 +128,7 @@ class CheckersGame
     sequences_copy = Marshal.load(Marshal.dump(sequences))
     jump_found = false
     
-    squences_copy.each_with_index do |sequence, i|
+    sequences_copy.each_with_index do |sequence, i|
       if sequence[0].length > 1
         jump_found = true
         break 
