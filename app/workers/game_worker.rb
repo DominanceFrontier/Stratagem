@@ -7,6 +7,7 @@
 #   Get to it together with Ryan sometime
 
 require "#{Rails.root}/games/checkers/checkersgame"
+require "#{Rails.root}/games/ttt/game.rb"
 
 class GameWorker
   include Sidekiq::Worker
@@ -21,7 +22,7 @@ class GameWorker
     else
       # ADD TIC-TAC-TOE object instantiation
       # here
-      @game = "blah"
+      @game = TicTacToeGame.new 
     end
     
     build_communication_channel    
