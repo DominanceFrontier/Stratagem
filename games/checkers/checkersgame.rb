@@ -93,6 +93,13 @@ class CheckersGame
       # move piece 
       board[src[0]][src[1]],
       board[dst[0]][dst[1]] = board[dst[0]][dst[1]], board[src[0]][src[1]]
+
+      # King a piece 
+      if turn == 'b' and dst[0] == board.length - 1
+        board[dst[0]][dst[1]] = 'B'
+      elsif turn == 'r' and dst[0] == 0
+        board[dst[0]][dst[1]] = 'R'
+      end
     end
 
     board.to_json 
@@ -142,6 +149,7 @@ class CheckersGame
       sequence = []
       sequence << move
       was_jump = false 
+      kinged = false 
       
       src, dst = move 
       
@@ -163,8 +171,17 @@ class CheckersGame
         new_board[dst[0]][dst[1]] = new_board[dst[0]][dst[1]], new_board[src[0]][src[1]]
       end
 
+      # check if piece became a king
+      new_piece = new_board[dst[0]][dst[1]]
+
+      if (new_piece == 'b' and dst[0] == new_board.length - 1) or
+         (new_piece == 'r' and dst[0] == 0)
+        kinged = true 
+      end
+      
       # Check if more jumps are available
-      if was_jump
+      # if the piece was not kinged
+      if was_jump and not kinged 
         sequence.concat move_sequences_for_piece(new_board, dst, depth + 1)
       end
       
