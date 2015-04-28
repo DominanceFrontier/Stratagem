@@ -6,13 +6,24 @@
 #   It would save stuff such as the player's piece, times and moves.
 #   Get to it together with Ryan sometime
 
+require "#{Rails.root}/games/checkers/checkersgame"
+
 class GameWorker
   include Sidekiq::Worker
   
   def perform(match_id)
     @match = Match.find(match_id)
 
-    load_js_context
+    # load_js_context
+
+    if @match.game.name == "Checkers"
+      @game = CheckersGame.new
+    else
+      # ADD TIC-TAC-TOE object instantiation
+      # here
+      @game = "blah"
+    end
+    
     build_communication_channel    
     build_duelers # Currently sets challenger as second player
 
@@ -24,7 +35,8 @@ class GameWorker
       fetch_move
       p ["Move: ", @move]
 
-      x = @game.isValidMove(@match.state, @move)
+      # x = @game.isValidMove(@match.state, @move)
+      x = @game.is_valid_move?(@match.state, @move, @player[:symbol])
       p ["isValidMove: " + x.to_s] 
 
       return illegal if @move.nil?
@@ -34,7 +46,9 @@ class GameWorker
       make_move
       publish_move
       
-      game_over = @game.checkForWinner(@match.state, @player[:symbol])      
+      # game_over = @game.checkForWinner(@match.state, @player[:symbol])      
+      game_over = @game.check_for_winner(@match.state, @player[:symbol])
+
       if game_over == @player[:symbol]
         return player_victory 
       elsif game_over == "t"
@@ -125,7 +139,8 @@ class GameWorker
   end
 
   def make_move
-    @match.state = @game.makeMove(@match.state, @move, @player[:symbol])
+    @match.state = @game.make_move(@match.state, @move, @player[:symbol])
+    # @match.state = @game.makeMove(@match.state, @move, @player[:symbol])
     move_list = JSON.parse(@match.moveHistory)
     move_list << {"piece" => @player[:symbol], "state" => @match.state,
                   "time_left" => @player[:time_left], "move" => @move}

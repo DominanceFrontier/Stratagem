@@ -3,10 +3,11 @@ require 'json'
 
 class CheckersGame
 
-  def check_for_winner(state)
+  def check_for_winner(state, turn)
     bcount, rcount = 0, 0 
-
-    for row in state
+    board = JSON.parse(state)
+    
+    for row in board
       for piece in row
         if piece.downcase == 'b'
           bcount += 1
@@ -16,23 +17,54 @@ class CheckersGame
       end
     end
 
-    if bcount > 0 and rcount > 0
-      return ' '
-    elsif bcount > 0 and rcount == 0
-      return 'b'
-    elsif rcount > 0 and bcount == 0
-      return 'r'
+    # If the other player cannot make a move
+    # because they no longer have pieces
+    return 'b' if turn == 'b' and rcount == 0
+
+    p ["bcount:", bcount]
+    
+    return 'r' if turn == 'r' and bcount == 0
+
+    other_player_can_move = false
+    player_can_move = true
+    
+    # The other player has pieces, so check
+    # if those pieces can make a move
+    board.each_with_index do |row, i|
+      row.each_with_index do |piece, j|
+        if piece != ' ' and piece != turn
+          moves = self.move_sequences_for_piece(board, [i, j])
+
+          if moves.length > 0
+            other_player_can_move = true
+            break 
+          end
+        end
+      end
     end
+
+    # If none of the other player's pieces
+    # can move, then they lost
+    if not other_player_can_move
+      p ["Other player can move:", other_player_can_move]
+      return turn 
+    end
+
+    return ' '
   end
   
   # Checks if a given move sequence is valid
   # for a turn and given a specific state 
   def is_valid_move?(state, sequence, turn)
+    sequence = [JSON.parse(sequence)]
     
     if self.is_valid_sequence?(state, sequence, turn)
       possible_sequences = self.possible_sequences(state, turn)
+ 
+      p ["Sequences:", possible_sequences]
       
       for ps in possible_sequences
+        p ["comparing:", ps, sequence]
         if ps == sequence
           return true 
         end
@@ -42,9 +74,10 @@ class CheckersGame
     return false 
   end
 
-  def make_move(state, sequence)
+  def make_move(state, sequence, turn)
     board = JSON.parse(state)
-
+    sequence = [JSON.parse(sequence)]
+    
     for move in sequence
       src, dst = move
 
@@ -55,15 +88,11 @@ class CheckersGame
 
         # remove middle piece 
         board[r][c] = ' '
-
-        # move jumping piece 
-        board[src[0]][src[1]],
-        board[dst[0]][dst[1]] = board[dst[0]][dst[1]], board[src[0]][src[1]]
-      else
-        # move piece 
-        board[src[0]][src[1]],
-        board[dst[0]][dst[1]] = board[dst[0]][dst[1]], board[src[0]][src[1]]
       end
+
+      # move piece 
+      board[src[0]][src[1]],
+      board[dst[0]][dst[1]] = board[dst[0]][dst[1]], board[src[0]][src[1]]
     end
 
     board.to_json 
@@ -138,8 +167,9 @@ class CheckersGame
       if was_jump
         sequence.concat move_sequences_for_piece(new_board, dst, depth + 1)
       end
-        
-      sequences << sequence 
+      
+      sequences << sequence
+      new_board = Marshal.load(Marshal.dump(board))
     end
 
     return sequences 
