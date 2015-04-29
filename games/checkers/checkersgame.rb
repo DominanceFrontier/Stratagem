@@ -46,7 +46,6 @@ class CheckersGame
     # If none of the other player's pieces
     # can move, then they lost
     if not other_player_can_move
-      p ["Other player can move:", other_player_can_move]
       return turn 
     end
 
@@ -56,7 +55,7 @@ class CheckersGame
   # Checks if a given move sequence is valid
   # for a turn and given a specific state 
   def is_valid_move?(state, sequence, turn)
-    sequence = [JSON.parse(sequence)]
+    sequence = JSON.parse(sequence)
     
     if self.is_valid_sequence?(state, sequence, turn)
       possible_sequences = self.possible_sequences(state, turn)
@@ -76,7 +75,7 @@ class CheckersGame
 
   def make_move(state, sequence, turn)
     board = JSON.parse(state)
-    sequence = [JSON.parse(sequence)]
+    sequence = JSON.parse(sequence)
     
     for move in sequence
       src, dst = move
@@ -135,14 +134,29 @@ class CheckersGame
       end
     end
 
-    sequences_copy.each_with_index do |sequence, i|
-      if sequence[0].length == 1
-        sequences.delete(sequence)
+    if jump_found
+      sequences_copy.each_with_index do |sequence, i|
+        if sequence[0].length == 1
+          sequences.delete(sequence)
+        end
       end
     end
 
     return sequences 
   end
+
+  # [
+  #   [
+  #     [[3, 0], [5, 2]], 
+  #     [[[5, 2], [7, 0]]]
+  #   ]
+  # ]
+
+  # [
+  #   [
+  #     [[3, 0], [5, 2]], [[5, 2], [7, 0]]
+  #   ]
+  # ] 
 
   def move_sequences_for_piece(board, src, depth = 0)
     new_board = Marshal.load(Marshal.dump(board))
@@ -200,7 +214,10 @@ class CheckersGame
       # Check if more jumps are available
       # if the piece was not kinged
       if was_jump and not kinged 
-        sequence.concat move_sequences_for_piece(new_board, dst, depth + 1)
+        new_sequence = move_sequences_for_piece(new_board, dst, depth + 1)
+        if new_sequence.length > 0
+          sequence.concat new_sequence[0]
+        end
       end
       
       sequences << sequence
@@ -218,7 +235,7 @@ class CheckersGame
 
     if srcpiece == 'b' or srcpiece == 'B'
       # check for down left jump
-      if src[1] - 2 >= 0 and src[0] + 2 < board.length
+      if src[1] - 2 >= 0 and src[0] + 2 < board.length and src[1] - 2 >= 0
         r = src[0] + 2
         c = src[1] - 2
 
@@ -228,7 +245,7 @@ class CheckersGame
       end
 
       # check for down right jump
-      if src[1] + 2 < board[0].length  and src[0] + 2 < board.length
+      if src[1] + 2 < board[0].length and src[0] + 2 < board.length and src[1] + 2 < board.length
         r = src[0] + 2
         c = src[1] + 2
 
@@ -240,7 +257,7 @@ class CheckersGame
       # If the piece is a king
       if srcpiece == 'B'
         # check up left
-        if src[1] - 2 >= 0 and src[0] - 2 >= 0
+        if src[1] - 2 >= 0 and src[0] - 2 >= 0 and src[1] - 2 >= 0
           r = src[0] - 2
           c = src[1] - 2
 
@@ -250,7 +267,7 @@ class CheckersGame
         end
 
         # check up right
-        if src[1] + 2 <= board[0].length and src[0] - 2 >= 0
+        if src[1] + 2 <= board[0].length and src[0] - 2 >= 0 and src[1] + 2 < board.length
           r = src[0] - 2
           c = src[1] + 2
 
@@ -262,7 +279,7 @@ class CheckersGame
 
     elsif srcpiece == 'r' or srcpiece == 'R'
       # check for up left jump
-      if src[1] - 2 >= 0 and src[0] - 2 >= 0
+      if src[1] - 2 >= 0 and src[0] - 2 >= 0 and src[1] - 2 >= 0
         r = src[0] - 2
         c = src[1] - 2
 
@@ -272,7 +289,7 @@ class CheckersGame
       end
 
       # check for up right jump
-      if src[1] + 2 < board[0].length  and src[0] - 2 >= 0
+      if src[1] + 2 < board[0].length  and src[0] - 2 >= 0 and src[1] + 2 < board.length
         r = src[0] - 2
         c = src[1] + 2
 
@@ -284,7 +301,7 @@ class CheckersGame
       # If the piece is a king
       if srcpiece == 'R'
         # check down left
-        if src[1] - 2 >= 0 and src[0] + 2 < board.length 
+        if src[1] - 2 >= 0 and src[0] + 2 < board.length and src[1] - 2 >= 0
           r = src[0] + 2
           c = src[1] - 2
 
@@ -294,7 +311,7 @@ class CheckersGame
         end
 
         # check down right
-        if src[1] + 2 <= board[0].length and src[0] + 2 < board.length 
+        if src[1] + 2 <= board[0].length and src[0] + 2 < board.length and src[1] + 2 < board.length 
           r = src[0] + 2
           c = src[1] + 2
 
@@ -309,7 +326,7 @@ class CheckersGame
     if moves.length == 0 and check_forward
       if srcpiece == 'b' or srcpiece == 'B'
         # check for down left jump
-        if src[1] - 1 >= 0 and src[0] + 1 < board.length
+        if src[1] - 1 >= 0 and src[0] + 1 < board.length and src[1] - 1 >= 0
           r = src[0] + 1
           c = src[1] - 1
 
@@ -319,7 +336,7 @@ class CheckersGame
         end
 
         # check for down right jump
-        if src[1] + 1 < board[0].length  and src[0] + 1 < board.length
+        if src[1] + 1 < board[0].length  and src[0] + 1 < board.length and src[1] + 1 < board.length
           r = src[0] + 1
           c = src[1] + 1
 
@@ -331,7 +348,7 @@ class CheckersGame
         # If the piece is a king
         if srcpiece == 'B'
           # check up left
-          if src[1] - 1 >= 0 and src[0] - 1 >= 0
+          if src[1] - 1 >= 0 and src[0] - 1 >= 0 and src[1] - 1 >= 0
             r = src[0] - 1
             c = src[1] - 1
 
@@ -341,7 +358,7 @@ class CheckersGame
           end
 
           # check up right
-          if src[1] + 1 <= board[0].length and src[0] - 1 >= 0
+          if src[1] + 1 <= board[0].length and src[0] - 1 >= 0 and src[1] + 1 < board.length
             r = src[0] - 1
             c = src[1] + 1
 
@@ -353,7 +370,7 @@ class CheckersGame
 
       elsif srcpiece == 'r' or srcpiece == 'R'
         # check for up left jump
-        if src[1] - 1 >= 0 and src[0] - 1 >= 0
+        if src[1] - 1 >= 0 and src[0] - 1 >= 0 and src[1] - 1 >= 0
           r = src[0] - 1
           c = src[1] - 1
 
@@ -363,7 +380,7 @@ class CheckersGame
         end
 
         # check for up right jump
-        if src[1] + 1 < board[0].length  and src[0] - 1 >= 0
+        if src[1] + 1 < board[0].length  and src[0] - 1 >= 0 and src[1] + 1 < board.length
           r = src[0] - 1
           c = src[1] + 1
 
@@ -375,7 +392,7 @@ class CheckersGame
         # If the piece is a king
         if srcpiece == 'R'
           # check down left
-          if src[1] - 1 >= 0 and src[0] + 1 < board.length 
+          if src[1] - 1 >= 0 and src[0] + 1 < board.length and src[1] - 1 >= 0
             r = src[0] + 1
             c = src[1] - 1
 
@@ -385,7 +402,7 @@ class CheckersGame
           end
 
           # check down right
-          if src[1] + 1 < board[0].length and src[0] + 1 < board.length 
+          if src[1] + 1 < board[0].length and src[0] + 1 < board.length and src[1] + 1 < board.length 
             r = src[0] + 1
             c = src[1] + 1
 
@@ -411,6 +428,8 @@ class CheckersGame
   def is_valid_sequence?(state, sequence, turn)
     board = JSON.parse(state)
     valid = true  
+
+    sequence = sequence[0]
 
     sequence.each do |move|
       valid = valid and self.is_valid_space?(state, move, turn)

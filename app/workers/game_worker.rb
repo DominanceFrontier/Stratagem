@@ -40,7 +40,7 @@ class GameWorker
       x = @game.is_valid_move?(@match.state, @move, @player[:symbol])
       p ["isValidMove: " + x.to_s] 
 
-      return illegal if @move.nil?
+      return illegal if @move.nil? || @move == 'nil'
       return timeout if @move.empty? || @player[:time_left] < 0
 
       return illegal unless x
