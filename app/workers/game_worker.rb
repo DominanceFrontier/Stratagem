@@ -7,7 +7,7 @@
 #   Get to it together with Ryan sometime
 
 require "#{Rails.root}/games/checkers/checkersgame"
-require "#{Rails.root}/games/ttt/game.rb"
+require "#{Rails.root}/games/ttt/game"
 
 class GameWorker
   include Sidekiq::Worker
@@ -15,7 +15,7 @@ class GameWorker
   def perform(match_id)
     @match = Match.find(match_id)
 
-    # load_js_context
+    # load_js_context # This is actually a *deprecated* method call
 
     if @match.game.name == "Checkers"
       @game = CheckersGame.new
@@ -29,22 +29,25 @@ class GameWorker
     build_duelers # Currently sets challenger as second player
 
     restore_match_state # if resuming a match for whatever reason
+    sleep(1)
     
     while @match.result == "open" do
       p ["Turn: ", @player[:symbol]]
-      p ["time_left", @player[:time_left]]
+      p ["Time left: ", @player[:time_left]]
       fetch_move
       p ["Move: ", @move]
 
+      return illegal if @move.nil? || @move == 'nil'
+      
       # x = @game.isValidMove(@match.state, @move)
       x = @game.is_valid_move?(@match.state, @move, @player[:symbol])
-      p ["isValidMove: " + x.to_s] 
-
-      return illegal if @move.nil? || @move == 'nil'
+      p ["Move validation returned: " + x.to_s]
+      
       return timeout if @move.empty? || @player[:time_left] < 0
-
       return illegal unless x
+
       make_move
+
       publish_move
       
       # game_over = @game.checkForWinner(@match.state, @player[:symbol])      
@@ -98,14 +101,15 @@ class GameWorker
   def restore_match_state
     move_history = JSON.parse(@match.moveHistory)
     return if move_history.empty?
+    num_moves_made = move_history.length
     last_move = move_history[-1]
     last_player = last_move["piece"]
     if last_player = @opponent[:symbol]
       @opponent[:time_left] = last_move["time_left"]
-      @player[:time_left] = move_history[-2]["time_left"]
+      @player[:time_left] = move_history[-2]["time_left"] unless num_moves_made < 2
     else
       @player[:time_left] = last_move["time_left"]
-      @opponent[:time_left] = move_history[-2]["time_left"]
+      @opponent[:time_left] = move_history[-2]["time_left"] unless num_moves_made < 2
       @player, @opponent = @opponent, @player
     end
   end
