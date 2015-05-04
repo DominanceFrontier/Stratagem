@@ -35,15 +35,17 @@ class GameWorker
       p ["Turn: ", @player[:symbol]]
       p ["Time left: ", @player[:time_left]]
       fetch_move
+      p ["Time left now: ", @player[:time_left]]
       p ["Move: ", @move]
 
-      return illegal if @move.nil? || @move == 'nil'
+      return timeout if @move.empty? || @player[:time_left] <= 0
+
+      return illegal if @move.nil?
       
       # x = @game.isValidMove(@match.state, @move)
       x = @game.is_valid_move?(@match.state, @move, @player[:symbol])
       p ["Move validation returned: " + x.to_s]
       
-      return timeout if @move.empty? || @player[:time_left] < 0
       return illegal unless x
 
       make_move
@@ -120,14 +122,14 @@ class GameWorker
           "#{@player[:script]} #{@match.state.inspect} " \
           "#{@player[:time_left]} #{@player[:symbol]}"
     r, w = IO.pipe
-    pid = spawn(cmd, rlimit_cpu: @player[:time_left] / 1000, out: w)
+    pid = spawn(cmd, rlimit_cpu: @player[:time_left] / 1000.0, out: w)
     start_time = Process.times
     Process.wait pid
     w.close
     move = r.read
     r.close
     p ["move from runner", move]
-    @move = move.split("\n")[-1]
+    @move = move.empty? ? move : move.split("\n")[-1]
     end_time = Process.times
     total_time = end_time.cutime - start_time.cutime +
                  end_time.cstime - start_time.cstime
@@ -137,20 +139,32 @@ class GameWorker
   end
   
   # Just save the results to the database
-  def save
+  def save_match
+    @match.save
+  end
+
+  def save_players_stats
     @player[:player].stat.save
     @opponent[:player].stat.save
-    @match.save
+  end
+  
+  def save
+    save_players_stats
+    save_match
+  end
+
+  def update_move_history
+    move_list = JSON.parse(@match.moveHistory)
+    move_list << {"piece" => @player[:symbol], "state" => @match.state,
+                  "time_left" => @player[:time_left], "move" => @move}
+    @match.moveHistory = JSON.generate(move_list)   
   end
 
   def make_move
     @match.state = @game.make_move(@match.state, @move, @player[:symbol])
     # @match.state = @game.makeMove(@match.state, @move, @player[:symbol])
-    move_list = JSON.parse(@match.moveHistory)
-    move_list << {"piece" => @player[:symbol], "state" => @match.state,
-                  "time_left" => @player[:time_left], "move" => @move}
-    @match.moveHistory = JSON.generate(move_list)
-    @match.save
+    update_move_history
+    save_match
   end
 
   def publish_move
@@ -188,12 +202,18 @@ class GameWorker
   end    
 
   def timeout
+    @move = ["Timed Out"]
     @player[:player].stat.timeouts += 1
+    update_move_history
+    save_match
     opponent_victory
   end
   
   def illegal
+    @move = ["Illegal Move"]
     @player[:player].stat.illegals += 1
+    update_move_history
+    save_match
     opponent_victory
   end
 
