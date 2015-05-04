@@ -126,15 +126,24 @@ class CheckersGame(object):
             if len(sequence) > 1:
                 jump_found = True
                 break 
+            elif len(sequence) == 1:
+                src, dst = sequence[0][0], sequence[0][1]
+
+                if abs(src[0] - dst[0]) == 2 and abs(src[1] - dst[1]) == 2:
+                    jump_found = True 
+                    break 
 
         if jump_found:
             sequences_copy = copy.deepcopy(sequences)
             
             for sequence_c in sequences_copy:
                 if len(sequence_c) == 1:
-                    # print "removing", sequence_c, "..."
-                    sequences.remove(sequence_c)
+                    src, dst = sequence_c[0][0], sequence_c[0][1]
 
+                    if abs(src[0] - dst[0]) == 1 and abs(src[1] - dst[1]) == 1:
+                        # print "removing", sequence_c, "..."
+                        sequences.remove(sequence_c)
+                        
         return sequences 
 
     def move_sequences_for_piece(self, board, src, depth = 0):
@@ -426,9 +435,11 @@ class CheckersAI(object):
     def __init__(self):
         pass 
 
-    def get_move(self, state, turn):
+    def get_move_random(self, state, turn):
         c = CheckersGame()
         sequences = c.possible_sequences(state, turn)
+
+        print sequences 
 
         x = random.choice(sequences)
         return x
@@ -436,5 +447,5 @@ class CheckersAI(object):
 def get_move(state, time_left, turn):
     ai = CheckersAI()
 
-    return json.dumps(ai.get_move(state, turn))
+    return json.dumps(ai.get_move_random(state, turn))
 
