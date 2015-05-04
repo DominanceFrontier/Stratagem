@@ -31,7 +31,7 @@ Game.prototype.isValidMove = function(board, move){
     return isWithinBounds(board, move) && onFreeTile(board, move);
 
     function isWithinBounds(board, move){
-        return move[0] >= 0 && move[0] <= 2 && move[1] >= 0 && move[0] <= 2;
+        return move[0] >= 0 && move[0] <= 2 && move[1] >= 0 && move[1] <= 2;
     }
 
     function onFreeTile(board, move){

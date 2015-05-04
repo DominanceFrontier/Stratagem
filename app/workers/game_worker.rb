@@ -205,7 +205,7 @@ class GameWorker
     @move = ["Timed Out"]
     @player[:player].stat.timeouts += 1
     update_move_history
-    save_match
+    publish_move
     opponent_victory
   end
   
@@ -213,7 +213,7 @@ class GameWorker
     @move = ["Illegal Move"]
     @player[:player].stat.illegals += 1
     update_move_history
-    save_match
+    publish_move
     opponent_victory
   end
 
