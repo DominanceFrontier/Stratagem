@@ -40,7 +40,7 @@ class GameWorker
 
       return timeout if @move.empty? || @player[:time_left] <= 0
 
-      return illegal if @move.nil?
+      return nullmove if @move.nil?
       
       # x = @game.isValidMove(@match.state, @move)
       x = @game.is_valid_move?(@match.state, @move, @player[:symbol])
@@ -202,15 +202,24 @@ class GameWorker
   end    
 
   def timeout
-    @move = ["Timed Out"]
+    @move = ["Timed Out!!"]
     @player[:player].stat.timeouts += 1
+    update_move_history
+    publish_move
+    opponent_victory
+  end
+
+  def nullmove
+    @move = ["NULL move!"]
+    @player[:player].stat.illegals += 1
     update_move_history
     publish_move
     opponent_victory
   end
   
   def illegal
-    @move = ["Illegal Move"]
+    @move ||= []
+    @move << " : Illegal Move!!!"
     @player[:player].stat.illegals += 1
     update_move_history
     publish_move

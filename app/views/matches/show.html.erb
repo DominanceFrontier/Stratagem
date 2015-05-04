@@ -45,10 +45,7 @@
    }
 
    BoardView.prototype.update = function(state){
-       console.log("herezzz");
-
        this.state = state;
-       console.log(this.state);
    }
 
    BoardView.prototype.draw = function(context){
@@ -82,9 +79,6 @@
 
        context.stroke();
        context.closePath();
-
-       console.log("drawing...");
-       console.log(this.state);
 
        for (var r = 0; r < 3; ++r){
            for (var c = 0; c < 3; ++c){
@@ -150,7 +144,6 @@
    view.update = function(state){
        for (var i = 0; i < this.elements.length; ++i)
        {
-           console.log("here");
            this.elements[i].update(state);
        }
    };
