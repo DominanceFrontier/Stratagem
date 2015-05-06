@@ -43,8 +43,12 @@ class GameWorker
       return nullmove if @move.nil?
       
       # x = @game.isValidMove(@match.state, @move)
-      x = @game.is_valid_move?(@match.state, @move, @player[:symbol])
-      p ["Move validation returned: " + x.to_s]
+      begin
+        x = @game.is_valid_move?(@match.state, @move, @player[:symbol])
+        p ["Move validation returned: " + x.to_s]
+      rescue
+        return illegal
+      end
       
       return illegal unless x
 
