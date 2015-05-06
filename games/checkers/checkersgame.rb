@@ -130,14 +130,24 @@ class CheckersGame
     sequences_copy.each_with_index do |sequence, i|
       if sequence[0].length > 1
         jump_found = true
-        break 
+        break
+      elsif sequence[0].length == 1
+        src, dst = sequence[0]
+
+        if (src[0] - dst[0]).abs == 2 && (src[1] - dst[1]).abs == 2
+          jump_found = true 
+        end
       end
     end
 
     if jump_found
       sequences_copy.each_with_index do |sequence, i|
         if sequence[0].length == 1
-          sequences.delete(sequence)
+          src, dst = sequence[0]
+
+          if (src[0] - dst[0]).abs == 1 && (src[1] - dst[1]).abs == 1
+            sequences.delete(sequence)
+          end
         end
       end
     end
