@@ -339,7 +339,7 @@ def opponent_has_move(board, player):
     opponent = 'r'
     if player == 'r':
         opponent = 'b'
-    ms = get_possible_moveseqs(board, player)
+    ms = get_possible_moveseqs(board, opponent)
     return True if ms else False
 
 if __name__ == "__main__":
