@@ -19,29 +19,30 @@ class CheckersGame
 
     # If the other player cannot make a move
     # because they no longer have pieces
-    return 'b' if turn == 'b' and rcount == 0
-
     p ["bcount:", bcount]
-    
+    p ["rcount:", rcount]
+    return 'b' if turn == 'b' and rcount == 0    
     return 'r' if turn == 'r' and bcount == 0
 
-    other_player_can_move = false
-    player_can_move = true
-    
-    # The other player has pieces, so check
-    # if those pieces can make a move
-    board.each_with_index do |row, i|
-      row.each_with_index do |piece, j|
-        if piece != ' ' and piece != turn
-          moves = self.move_sequences_for_piece(board, [i, j])
+    # monkeypatching with call to python
+    other_player_can_move = opponent_has_move?(state, turn)
 
-          if moves.length > 0
-            other_player_can_move = true
-            break 
-          end
-        end
-      end
-    end
+    # player_can_move = true
+    
+    # # The other player has pieces, so check
+    # # if those pieces can make a move
+    # board.each_with_index do |row, i|
+    #   row.each_with_index do |piece, j|
+    #     if piece != ' ' and piece != turn
+    #       moves = self.move_sequences_for_piece(board, [i, j])
+
+    #       if moves.length > 0
+    #         other_player_can_move = true
+    #         break 
+    #       end
+    #     end
+    #   end
+    # end
 
     # If none of the other player's pieces
     # can move, then they lost
@@ -54,25 +55,53 @@ class CheckersGame
   
   # Checks if a given move sequence is valid
   # for a turn and given a specific state 
-  def is_valid_move?(state, sequence, turn)
-    sequence = JSON.parse(sequence)
+  # def is_valid_move?(state, sequence, turn)
+  #   sequence = JSON.parse(sequence)
     
-    if self.is_valid_sequence?(state, sequence, turn)
-      possible_sequences = self.possible_sequences(state, turn)
+  #   if self.is_valid_sequence?(state, sequence, turn)
+  #     possible_sequences = self.possible_sequences(state, turn)
  
-      p ["Sequences:", possible_sequences]
+  #     p ["Sequences:", possible_sequences]
       
-      for ps in possible_sequences
-        p ["comparing:", ps, sequence]
-        if ps == sequence
-          return true 
-        end
-      end
-    end
+  #     for ps in possible_sequences
+  #       p ["comparing:", ps, sequence]
+  #       if ps == sequence
+  #         return true 
+  #       end
+  #     end
+  #   end
 
-    return false 
+  #   return false 
+  # end
+  # A hack to redirect call to python logic instead
+  def is_valid_move?(state, sequence, turn)
+    cmd = "python #{Rails.root.to_s}/games/checkers/checkers.py is_valid_move? #{state.inspect} #{turn} #{sequence.inspect} "
+    r, w = IO.pipe
+    pid = spawn(cmd, out: w)
+    Process.wait pid
+    w.close
+    validation_flag = r.read
+    r.close
+    validation_flag = validation_flag.split("\n")[-1]
+    #p ["validation_flag: ", validation_flag]
+    
+    return validation_flag == "True"
   end
 
+  def opponent_has_move?(state, turn)
+    cmd = "python #{Rails.root.to_s}/games/checkers/checkers.py opponent_has_move? #{state.inspect} #{turn}"
+    r, w = IO.pipe
+    pid = spawn(cmd, out: w)
+    Process.wait pid
+    w.close
+    validation_flag = r.read
+    r.close
+    validation_flag = validation_flag.split("\n")[-1]
+    p ["can_opponent_move?: ", validation_flag]
+    return validation_flag == "True"
+  end
+
+    
   def make_move(state, sequence, turn)
     board = JSON.parse(state)
     sequence = JSON.parse(sequence)

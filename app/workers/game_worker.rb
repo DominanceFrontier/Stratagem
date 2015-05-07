@@ -38,9 +38,9 @@ class GameWorker
       p ["Time left now: ", @player[:time_left]]
       p ["Move: ", @move]
 
-      return timeout if @move.empty? || @player[:time_left] <= 0
-
       return nullmove if @move.nil?
+      
+      return timeout if @move.empty? || @player[:time_left] <= 0
       
       # x = @game.isValidMove(@match.state, @move)
       begin
