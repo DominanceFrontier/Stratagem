@@ -307,7 +307,11 @@ def get_possible_moveseqs(board, player):
                             current_board[bnext_row_num][next_rcol_num] = col_char
                             current_path.append((bnext_row_num, next_rcol_num))                            
                             moveseqs[-99].append([current_path, current_board])
-                            
+
+    if jumps_exist:
+        moveseqs.pop(0, 0)
+        moveseqs.pop(-99, 0)
+        
     return moveseqs
 
 def adapter(ms):
