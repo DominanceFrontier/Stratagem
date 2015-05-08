@@ -445,33 +445,12 @@
       <% JSON.parse(@match.moveHistory).each do |x|%>
         <div class='panel panel-default'>
           <div class='panel-heading'>
-            <% if x['piece'] == 'x' %>
-              <% if @match.mario.is_a? User %>
-                <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
-              <% else %>
-                <%= link_to @match.mario.user.username, @match.mario.user, :target => "_blank" %>'s AI 
-                <strong>
-                  <%= link_to @match.mario.username, @match.mario, :target => "_blank" %>
-                </strong>
-              <% end %>
-            <% else %>
-              <% if @match.mario.is_a? User %>
-                <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
-              <% else %>
-                <%= link_to @match.luigi.user.username, @match.luigi.user, :target => "_blank" %>'s AI 
-                <strong>
-                  <%= link_to @match.luigi.username, @match.luigi, :target => "_blank" %>
-                </strong>
-              <% end %>
-            <% end %>
-            placed an <%= x['piece'] %> at
+            <%= x['piece'] %> 
           </div>
           <div class='panel-body'>
             <%= x['move'] %>
           </div>
         </div>
-        <!-- <script> states.push(x['move']); </script> -->
-      <% end %>
     </section>
     <section>
       <h1 id="result">
